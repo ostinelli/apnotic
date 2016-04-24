@@ -22,12 +22,18 @@ module Apnotic
       @uri       = URI.parse(options[:uri] || APPLE_PRODUCTION_SERVER_URI)
       @cert_path = options[:cert_path]
       @cert_pass = options[:cert_pass]
+      @timeout   = options[:timeout] || 60
 
-      @pipe_r, @pipe_w = Socket.pair(:UNIX, :STREAM, 0)
-      @socket_thread   = nil
+      @pipe_r, @pipe_w        = Socket.pair(:UNIX, :STREAM, 0)
+      @socket_thread          = nil
+      @streams_timeout_thread = nil
+      @mutex                  = Mutex.new
+      @streams                = {}
 
       raise "URI needs to be a HTTPS address" if uri.scheme != 'https'
       raise "Cert file not found: #{@cert_path}" unless @cert_path && File.exists?(@cert_path)
+
+      check_streams_timeout
     end
 
     def push(notification, &block)
@@ -44,12 +50,15 @@ module Apnotic
 
     def close
       exit_thread(@socket_thread)
+      exit_thread(@streams_timeout_thread)
 
-      @ssl_context = nil
-      @h2          = nil
-      @read_thread = nil
-      @pipe_r      = nil
-      @pipe_w      = nil
+      @ssl_context            = nil
+      @h2                     = nil
+      @pipe_r                 = nil
+      @pipe_w                 = nil
+      @socket_thread          = nil
+      @streams_timeout_thread = nil
+      @streams                = {}
     end
 
     private
@@ -70,9 +79,10 @@ module Apnotic
     end
 
     def h2_stream_with(&block)
-      stream = Apnotic::Stream.new(&block)
-
+      stream    = Apnotic::Stream.new(&block)
       h2_stream = h2.new_stream
+
+      @mutex.synchronize { @streams[h2_stream.id] = stream }
 
       h2_stream.on(:headers) do |hs|
         hs.each { |k, v| stream.headers[k] = v }
@@ -84,9 +94,36 @@ module Apnotic
 
       h2_stream.on(:close) do
         stream.trigger_callback
+        @mutex.synchronize { @streams.delete(h2_stream.id) }
       end
 
       h2_stream
+    end
+
+    def check_streams_timeout
+      return if @streams_timeout_thread
+
+      @streams_timeout_thread = Thread.new do
+
+        loop do
+          cutout_time = Time.now.utc - @timeout
+
+          @mutex.synchronize do
+
+            streams_to_delete = []
+            @streams.each do |h2_stream_id, stream|
+              streams_to_delete << h2_stream_id if stream.sent_at < cutout_time
+            end
+
+            streams_to_delete.each do |id|
+              @streams[id].trigger_timeout
+              @streams.delete(id)
+            end
+          end
+
+          sleep 1
+        end
+      end.tap { |t| t.abort_on_exception = true }
     end
 
     def open

@@ -7,7 +7,7 @@ describe Apnotic::Connection do
     Apnotic::Connection.new({
       uri:       uri,
       cert_path: cert_path,
-      cert_pass: "",
+      cert_pass: ""
     })
   end
 

@@ -32,22 +32,30 @@ module Apnotic
       def initialize(options={})
         @port          = options[:port]
         @listen_thread = nil
+        @threads       = []
       end
 
       def listen
         @listen_thread = Thread.new do
           loop do
-            Thread.start(server.accept) { |socket| handle(socket) }
+            Thread.start(server.accept) do |socket|
+              @threads << Thread.current
+              handle(socket)
+            end
           end
         end.tap { |t| t.abort_on_exception = true }
       end
 
       def stop
         exit_thread(@listen_thread)
+        @threads.each { |t| exit_thread(t) }
 
-        @listen_thread = nil
+        server.close
+
         @server        = nil
         @ssl_context   = nil
+        @listen_thread = nil
+        @threads       = []
       end
 
       private

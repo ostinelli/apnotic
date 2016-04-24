@@ -22,11 +22,11 @@ module Apnotic
       raise "Cert file not found: #{@cert_path}" unless @cert_path && File.exists?(@cert_path)
     end
 
-    def push(notification)
+    def push(notification, &block)
       headers = build_headers_for notification
       body    = notification.body
 
-      h2_stream = h2.new_stream
+      h2_stream = h2_stream_with(&block)
 
       open
 
@@ -40,6 +40,8 @@ module Apnotic
       @ssl_context = nil
       @h2          = nil
       @read_thread = nil
+      @pipe_r      = nil
+      @pipe_w      = nil
     end
 
     private
@@ -59,6 +61,26 @@ module Apnotic
       headers
     end
 
+    def h2_stream_with(&block)
+      stream = Apnotic::Stream.new(&block)
+
+      h2_stream = h2.new_stream
+
+      h2_stream.on(:headers) do |hs|
+        hs.each { |k, v| stream.headers[k] = v }
+      end
+
+      h2_stream.on(:data) do |d|
+        stream.data << d
+      end
+
+      h2_stream.on(:close) do
+        stream.trigger_callback
+      end
+
+      h2_stream
+    end
+
     def open
       return if @socket_thread
 
@@ -67,17 +89,24 @@ module Apnotic
         socket = new_socket
 
         loop do
-          ready = IO.select([socket, @pipe_r])
 
-          if ready[0].include?(@pipe_r)
+          begin
             data_to_send = @pipe_r.read_nonblock(1024)
             socket.write(data_to_send)
+          rescue IO::WaitReadable, IO::WaitWritable
           end
 
-          if ready[0].include?(socket)
+          begin
             data_received = socket.read_nonblock(1024)
             h2 << data_received
             break if socket.nil? || socket.closed? || socket.eof?
+
+          rescue IO::WaitReadable
+            IO.select([socket, @pipe_r])
+
+          rescue IO::WaitWritable
+            IO.select([@pipe_r], [socket])
+
           end
         end
 

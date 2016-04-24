@@ -14,6 +14,7 @@ describe Apnotic::Connection do
   describe ".new" do
 
     describe "option: uri" do
+
       subject { connection.uri }
 
       context "when uri is not set" do
@@ -71,6 +72,18 @@ describe Apnotic::Connection do
           expect { connection }.to raise_error "Cert file not found: /non-existant.crt"
         end
       end
+    end
+  end
+
+  describe ".development" do
+    let(:options) { { uri: "will-be-overwritten", other: "options" } }
+
+    it "initializes a connection object with uri set to APPLE DEVELOPMENT" do
+      expect(Apnotic::Connection).to receive(:new).with(options.merge({
+        uri: "https://api.development.push.apple.com:443"
+      }))
+
+      Apnotic::Connection.development(options)
     end
   end
 

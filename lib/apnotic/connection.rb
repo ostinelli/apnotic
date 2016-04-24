@@ -5,10 +5,18 @@ require 'http/2'
 
 module Apnotic
 
-  APPLE_PRODUCTION_SERVER_URI = "https://api.push.apple.com:443"
+  APPLE_DEVELOPMENT_SERVER_URI = "https://api.development.push.apple.com:443"
+  APPLE_PRODUCTION_SERVER_URI  = "https://api.push.apple.com:443"
 
   class Connection
     attr_reader :uri, :cert_path
+
+    class << self
+      def development(options={})
+        options.merge!(uri: APPLE_DEVELOPMENT_SERVER_URI)
+        new(options)
+      end
+    end
 
     def initialize(options={})
       @uri       = URI.parse(options[:uri] || APPLE_PRODUCTION_SERVER_URI)

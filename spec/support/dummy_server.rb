@@ -36,27 +36,26 @@ module Apnotic
 
       def listen
         @listen_thread = Thread.new do
-          s      = TCPServer.new(@port)
-          server = OpenSSL::SSL::SSLServer.new(s, ssl_context)
-
           loop do
-            sock = server.accept
-            handle(sock)
+            Thread.start(server.accept) { |socket| handle(socket) }
           end
         end.tap { |t| t.abort_on_exception = true }
       end
 
       def stop
         exit_thread(@listen_thread)
+
         @listen_thread = nil
+        @server        = nil
+        @ssl_context   = nil
       end
 
       private
 
-      def handle(sock)
+      def handle(socket)
         conn = HTTP2::Server.new
 
-        conn.on(:frame) { |bytes| sock.write(bytes) }
+        conn.on(:frame) { |bytes| socket.write(bytes) }
 
         conn.on(:stream) do |stream|
           req = Request.new
@@ -78,19 +77,28 @@ module Apnotic
           end
         end
 
-        while sock && !sock.closed? && !sock.eof?
-          data = sock.read_nonblock(1024)
+        while socket && !socket.closed? && !socket.eof?
+          data = socket.read_nonblock(1024)
           conn << data
         end
 
-        sock.close unless sock.closed?
+        socket.close unless socket.closed?
+      end
+
+      def server
+        @server ||= begin
+          s = TCPServer.new(@port)
+          OpenSSL::SSL::SSLServer.new(s, ssl_context)
+        end
       end
 
       def ssl_context
-        ctx      = OpenSSL::SSL::SSLContext.new
-        ctx.cert = OpenSSL::X509::Certificate.new(File.open(cert_file_path))
-        ctx.key  = OpenSSL::PKey::RSA.new(File.open(key_file_path))
-        ctx
+        @ssl_context ||= begin
+          ctx      = OpenSSL::SSL::SSLContext.new
+          ctx.cert = OpenSSL::X509::Certificate.new(File.open(cert_file_path))
+          ctx.key  = OpenSSL::PKey::RSA.new(File.open(key_file_path))
+          ctx
+        end
       end
 
       def exit_thread(thread)

@@ -67,27 +67,18 @@ module Apnotic
         socket = new_socket
 
         loop do
-          readable, writeable = begin
+          ready = IO.select([socket, @pipe_r])
+
+          if ready[0].include?(@pipe_r)
             data_to_send = @pipe_r.read_nonblock(1024)
             socket.write(data_to_send)
-            [[], []]
-          rescue IO::WaitReadable
-            [[@pipe_r], []]
-          rescue IO::WaitWritable
-            [[], [@pipe_r]]
           end
 
-          begin
+          if ready[0].include?(socket)
             data_received = socket.read_nonblock(1024)
             h2 << data_received
             break if socket.nil? || socket.closed? || socket.eof?
-          rescue IO::WaitReadable
-            readable << socket
-          rescue IO::WaitWritable
-            writeable << socket
           end
-
-          IO.select(readable, writeable)
         end
 
         socket.close unless socket.closed?

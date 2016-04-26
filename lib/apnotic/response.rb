@@ -7,7 +7,7 @@ module Apnotic
 
     def initialize(options={})
       @headers = options[:headers]
-      @body = options[:body]
+      @body    = options[:body]
     end
 
     def status

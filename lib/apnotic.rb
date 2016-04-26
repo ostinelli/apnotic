@@ -1,4 +1,5 @@
 require 'apnotic/connection'
+require 'apnotic/connection_pool'
 require 'apnotic/notification'
 require 'apnotic/response'
 require 'apnotic/stream'

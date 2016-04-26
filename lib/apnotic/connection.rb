@@ -60,32 +60,38 @@ module Apnotic
 
         socket = new_socket
 
-        loop do
+        begin
+          thread_loop(socket)
+        ensure
+          socket.close unless socket.closed?
+          @socket_thread = nil
+        end
+      end.tap { |t| t.abort_on_exception = true }
+    end
 
-          available = socket.pending
-          if available > 0
-            data_received = socket.sysread(available)
-            h2 << data_received
-            break if socket.nil? || socket.closed?
-          end
+    def thread_loop(socket)
+      loop do
 
-          ready = IO.select([socket, @pipe_r])
-
-          if ready[0].include?(@pipe_r)
-            data_to_send = @pipe_r.read_nonblock(1024)
-            socket.write(data_to_send)
-          end
-
-          if ready[0].include?(socket)
-            data_received = socket.read_nonblock(1024)
-            h2 << data_received
-            break if socket.nil? || socket.closed?
-          end
+        available = socket.pending
+        if available > 0
+          data_received = socket.sysread(available)
+          h2 << data_received
+          break if socket.nil? || socket.closed?
         end
 
-        socket.close unless socket.closed?
+        ready = IO.select([socket, @pipe_r])
 
-      end.tap { |t| t.abort_on_exception = true }
+        if ready[0].include?(@pipe_r)
+          data_to_send = @pipe_r.read_nonblock(1024)
+          socket.write(data_to_send)
+        end
+
+        if ready[0].include?(socket)
+          data_received = socket.read_nonblock(1024)
+          h2 << data_received
+          break if socket.nil? || socket.closed?
+        end
+      end
     end
 
     def new_socket

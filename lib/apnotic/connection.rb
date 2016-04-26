@@ -28,7 +28,7 @@ module Apnotic
       @mutex           = Mutex.new
 
       raise "URI needs to be a HTTPS address" if uri.scheme != 'https'
-      raise "Cert file not found: #{@cert_path}" unless @cert_path && File.exists?(@cert_path)
+      raise "Cert file not found: #{@cert_path}" unless @cert_path && File.exist?(@cert_path)
     end
 
     def push(notification, options={})

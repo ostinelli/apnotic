@@ -1,0 +1,11 @@
+language: ruby
+rvm:
+  - 2.1
+  - 2.2
+  - 2.3.0
+  - jruby-9.0.0.0
+  - rbx-2
+
+branches:
+  only:
+    - master

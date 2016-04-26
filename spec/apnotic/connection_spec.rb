@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Apnotic::Connection do
-  let(:uri) { nil }
+  let(:uri) { "https://localhost" }
   let(:cert_path) { cert_file_path }
   let(:connection) do
     Apnotic::Connection.new({
@@ -87,58 +87,24 @@ describe Apnotic::Connection do
     end
   end
 
-  describe "#build_headers_for" do
-    let(:notification_body) { "notification-body" }
-    let(:notification) do
-      notification            = Apnotic::Notification.new("phone-token")
-      notification.id         = "apns-id"
-      notification.expiration = 1461491082
-      notification.priority   = 10
-      notification.topic      = "com.example.myapp"
-      notification
-    end
-
-    def build_headers
-      connection.send(:build_headers_for, notification)
-    end
-
-    before { allow(notification).to receive(:body) { notification_body } }
-
-    it "returns the headers hash" do
-      expect(build_headers).to eq ({
-        ":scheme"         => "https",
-        ":method"         => "POST",
-        ":path"           => "/3/device/phone-token",
-        "host"            => "api.push.apple.com",
-        "content-length"  => "17",
-        "apns-id"         => "apns-id",
-        "apns-expiration" => 1461491082,
-        "apns-priority"   => 10,
-        "apns-topic"      => "com.example.myapp"
-      })
-    end
-  end
-
   describe "#push" do
     let(:notification) { double(:notification, token: "token", body: "notification-body") }
-    let(:headers) { double(:headers) }
-    let(:h2_stream) { double(:h2_stream) }
-    let(:stream) { double(:stream, h2_stream: h2_stream) }
     let(:options) { double(:options) }
-    let(:response) { double(:response) }
+    let(:h2_stream) { double(:h2_stream) }
+    let(:stream) { double(:stream) }
+    let(:result) { double(:result) }
 
     before do
-      allow(connection).to receive(:build_headers_for).with(notification) { headers }
-      allow(connection).to receive(:new_stream) { stream }
-      allow(stream).to receive(:response).with(options) { response }
+      allow(connection).to receive(:open)
+      allow(connection).to receive_message_chain(:h2, :new_stream) { h2_stream }
+      allow(Apnotic::Stream).to receive(:new).with(uri: URI.parse(uri), h2_stream: h2_stream) { stream }
     end
 
     it "sends the stream with the correct headers & data" do
-      expect(h2_stream).to receive(:headers).with(headers, { end_stream: false })
-      expect(h2_stream).to receive(:data).with("notification-body", { end_stream: true })
+      expect(connection).to receive(:open)
+      expect(stream).to receive(:push).with(notification, options) { result }
 
-      result = connection.push(notification, options)
-      expect(result).to eq response
+      expect(connection.push(notification, options)).to eq result
     end
   end
 end

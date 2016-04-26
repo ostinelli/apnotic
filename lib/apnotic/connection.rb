@@ -32,17 +32,9 @@ module Apnotic
     end
 
     def push(notification, options={})
-      headers = build_headers_for notification
-      body    = notification.body
-
-      stream = new_stream
-
       open
 
-      stream.h2_stream.headers(headers, end_stream: false)
-      stream.h2_stream.data(body, end_stream: true)
-
-      stream.response(options)
+      new_stream.push(notification, options)
     end
 
     def close
@@ -57,23 +49,8 @@ module Apnotic
 
     private
 
-    def build_headers_for(notification)
-      headers = {
-        ':scheme'        => @uri.scheme,
-        ':method'        => 'POST',
-        ':path'          => "/3/device/#{notification.token}",
-        'host'           => @uri.host,
-        'content-length' => notification.body.bytesize.to_s
-      }
-      headers.merge!('apns-id' => notification.id) if notification.id
-      headers.merge!('apns-expiration' => notification.expiration) if notification.expiration
-      headers.merge!('apns-priority' => notification.priority) if notification.priority
-      headers.merge!('apns-topic' => notification.topic) if notification.topic
-      headers
-    end
-
     def new_stream
-      Apnotic::Stream.new(h2_stream: h2.new_stream)
+      Apnotic::Stream.new(uri: @uri, h2_stream: h2.new_stream)
     end
 
     def open

@@ -1,10 +1,10 @@
 module Apnotic
 
   class Stream
-    attr_reader :h2_stream
 
     def initialize(options={})
       @h2_stream = options[:h2_stream]
+      @uri       = options[:uri]
       @headers   = {}
       @data      = ''
       @completed = false
@@ -24,7 +24,34 @@ module Apnotic
       end
     end
 
-    def response(options={})
+    def push(notification, options={})
+      headers = build_headers_for notification
+      body    = notification.body
+
+      @h2_stream.headers(headers, end_stream: false)
+      @h2_stream.data(body, end_stream: true)
+
+      respond(options)
+    end
+
+    private
+
+    def build_headers_for(notification)
+      headers = {
+        ':scheme'        => @uri.scheme,
+        ':method'        => 'POST',
+        ':path'          => "/3/device/#{notification.token}",
+        'host'           => @uri.host,
+        'content-length' => notification.body.bytesize.to_s
+      }
+      headers.merge!('apns-id' => notification.id) if notification.id
+      headers.merge!('apns-expiration' => notification.expiration) if notification.expiration
+      headers.merge!('apns-priority' => notification.priority) if notification.priority
+      headers.merge!('apns-topic' => notification.topic) if notification.topic
+      headers
+    end
+
+    def respond(options={})
       @mutex.synchronize { @cv.wait(@mutex, options[:timeout]) }
 
       if @completed

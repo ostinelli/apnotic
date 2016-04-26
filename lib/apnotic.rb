@@ -5,4 +5,5 @@ require 'apnotic/stream'
 require 'apnotic/version'
 
 module Apnotic
+  raise "Cannot require Apnotic, unsupported engine '#{RUBY_ENGINE}'" unless RUBY_ENGINE == "ruby"
 end

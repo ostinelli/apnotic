@@ -59,10 +59,7 @@ describe Apnotic::Connection do
 
       context "when it points to an existing file" do
         let(:cert_path) { cert_file_path }
-
-        it "sets it" do
-          expect(subject).to eq cert_path
-        end
+        it { is_expected.to eq cert_path }
       end
 
       context "when it points to an non-existant file" do

@@ -47,8 +47,10 @@ describe Apnotic::Stream do
 
     before { allow(notification).to receive(:body) { notification_body } }
 
-    it "returns the headers hash" do
-      expect(build_headers).to eq ({
+    subject { build_headers }
+
+    it { is_expected.to eq (
+      {
         ":scheme"         => "https",
         ":method"         => "POST",
         ":path"           => "/3/device/phone-token",
@@ -58,7 +60,7 @@ describe Apnotic::Stream do
         "apns-expiration" => 1461491082,
         "apns-priority"   => 10,
         "apns-topic"      => "com.example.myapp"
-      })
-    end
+      }
+    ) }
   end
 end

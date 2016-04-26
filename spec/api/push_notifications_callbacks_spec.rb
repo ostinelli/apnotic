@@ -77,7 +77,7 @@ describe "Push notification callbacks" do
     end
 
     response_1 = nil
-    thread    = Thread.new { response_1 = connection.push(notification_1) }
+    thread     = Thread.new { response_1 = connection.push(notification_1) }
     response_2 = connection.push(notification_2)
 
     thread.join

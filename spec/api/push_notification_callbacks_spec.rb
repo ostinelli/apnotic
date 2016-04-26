@@ -28,10 +28,8 @@ describe "Push notification callbacks" do
       res
     end
 
-    response = nil
-    connection.push(notification) { |res| response = res }
+    response = connection.push(notification)
 
-    wait_for { response.nil? == false }
     expect(response).not_to be_nil
 
     expect(response.ok?).to eq true
@@ -54,10 +52,9 @@ describe "Push notification callbacks" do
     end
 
     responses = []
-    connection.push(notification_1) { |res| responses << res }
-    connection.push(notification_2) { |res| responses << res }
+    responses << connection.push(notification_1)
+    responses << connection.push(notification_2)
 
-    wait_for { responses.length == 2 }
     expect(responses.length).to eq 2
 
     response_1, response_2 = responses

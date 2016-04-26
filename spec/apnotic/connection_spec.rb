@@ -122,24 +122,23 @@ describe Apnotic::Connection do
   describe "#push" do
     let(:notification) { double(:notification, token: "token", body: "notification-body") }
     let(:headers) { double(:headers) }
-    let(:h2) { double(:h2) }
     let(:h2_stream) { double(:h2_stream) }
-    let(:block) { Proc.new { |_| nil } }
+    let(:stream) { double(:stream, h2_stream: h2_stream) }
+    let(:options) { double(:options) }
+    let(:response) { double(:response) }
 
     before do
       allow(connection).to receive(:build_headers_for).with(notification) { headers }
-      allow(connection).to receive(:h2) { h2 }
+      allow(connection).to receive(:new_stream) { stream }
+      allow(stream).to receive(:response).with(options) { response }
     end
 
     it "sends the stream with the correct headers & data" do
-      expect(connection).to receive(:h2_stream_with) do |*args, &proc|
-        expect(proc).to be(block)
-        h2_stream
-      end
       expect(h2_stream).to receive(:headers).with(headers, { end_stream: false })
       expect(h2_stream).to receive(:data).with("notification-body", { end_stream: true })
 
-      connection.push(notification, &block)
+      result = connection.push(notification, options)
+      expect(result).to eq response
     end
   end
 end

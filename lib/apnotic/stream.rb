@@ -1,32 +1,40 @@
 module Apnotic
 
   class Stream
-    attr_accessor :headers, :data
-    attr_reader :sent_at
+    attr_reader :h2_stream
 
-    def initialize(&block)
-      @block   = block
-      @headers = {}
-      @data    = ''
-      @sent_at = Time.now.utc
+    def initialize(options={})
+      @h2_stream = options[:h2_stream]
+      @headers   = {}
+      @data      = ''
+      @completed = false
+      @mutex     = Mutex.new
+      @cv        = ConditionVariable.new
+
+      @h2_stream.on(:headers) do |hs|
+        hs.each { |k, v| @headers[k] = v }
+      end
+
+      @h2_stream.on(:data) { |d| @data << d }
+      @h2_stream.on(:close) do
+        @mutex.synchronize do
+          @completed = true
+          @cv.signal
+        end
+      end
     end
 
-    def trigger_callback
-      response = Apnotic::Response.new(
-        headers: headers,
-        body:    data
-      )
-      trigger_callback_with response
-    end
+    def response(options={})
+      @mutex.synchronize { @cv.wait(@mutex, options[:timeout]) }
 
-    def trigger_timeout
-      trigger_callback_with nil
-    end
-
-    private
-
-    def trigger_callback_with(response)
-      @block.call(response) if @block
+      if @completed
+        Apnotic::Response.new(
+          headers: @headers,
+          body:    @data
+        )
+      else
+        nil
+      end
     end
   end
 end

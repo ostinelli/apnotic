@@ -24,11 +24,11 @@ describe "Sending Push Notifications" do
     request       = nil
     server.on_req = Proc.new { |req| request = req }
 
-    connection.push(notification)
+    response = connection.push(notification)
 
-    wait_for { request.nil? == false }
+    expect(response).to be_a Apnotic::Response
+
     expect(request).not_to be_nil
-
     expect(request.headers[":scheme"]).to eq "https"
     expect(request.headers[":method"]).to eq "POST"
     expect(request.headers[":path"]).to eq "/3/device/#{device_id}"
@@ -46,10 +46,11 @@ describe "Sending Push Notifications" do
     requests      = []
     server.on_req = Proc.new { |req| requests << req }
 
-    connection.push(notification_1)
-    connection.push(notification_2)
+    response_1 = connection.push(notification_1)
+    response_2 = connection.push(notification_2)
 
-    wait_for { requests.length == 2 }
+    expect(response_1).to be_a Apnotic::Response
+    expect(response_2).to be_a Apnotic::Response
 
     request_1, request_2 = requests
     expect(request_1).not_to be_nil

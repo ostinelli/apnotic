@@ -22,43 +22,36 @@ module Apnotic
       @uri       = URI.parse(options[:uri] || APPLE_PRODUCTION_SERVER_URI)
       @cert_path = options[:cert_path]
       @cert_pass = options[:cert_pass]
-      @timeout   = options[:timeout] || 60
 
-      @pipe_r, @pipe_w        = Socket.pair(:UNIX, :STREAM, 0)
-      @socket_thread          = nil
-      @streams_timeout_thread = nil
-      @mutex                  = Mutex.new
-      @streams                = {}
+      @pipe_r, @pipe_w = Socket.pair(:UNIX, :STREAM, 0)
+      @socket_thread   = nil
 
       raise "URI needs to be a HTTPS address" if uri.scheme != 'https'
       raise "Cert file not found: #{@cert_path}" unless @cert_path && File.exists?(@cert_path)
-
-      check_streams_timeout
     end
 
-    def push(notification, &block)
+    def push(notification, options={})
       headers = build_headers_for notification
       body    = notification.body
 
-      h2_stream = h2_stream_with(&block)
+      stream = new_stream
 
       open
 
-      h2_stream.headers(headers, end_stream: false)
-      h2_stream.data(body, end_stream: true)
+      stream.h2_stream.headers(headers, end_stream: false)
+      stream.h2_stream.data(body, end_stream: true)
+
+      stream.response(options)
     end
 
     def close
       exit_thread(@socket_thread)
-      exit_thread(@streams_timeout_thread)
 
-      @ssl_context            = nil
-      @h2                     = nil
-      @pipe_r                 = nil
-      @pipe_w                 = nil
-      @socket_thread          = nil
-      @streams_timeout_thread = nil
-      @streams                = {}
+      @ssl_context   = nil
+      @h2            = nil
+      @pipe_r        = nil
+      @pipe_w        = nil
+      @socket_thread = nil
     end
 
     private
@@ -78,52 +71,8 @@ module Apnotic
       headers
     end
 
-    def h2_stream_with(&block)
-      stream    = Apnotic::Stream.new(&block)
-      h2_stream = h2.new_stream
-
-      @mutex.synchronize { @streams[h2_stream.id] = stream }
-
-      h2_stream.on(:headers) do |hs|
-        hs.each { |k, v| stream.headers[k] = v }
-      end
-
-      h2_stream.on(:data) do |d|
-        stream.data << d
-      end
-
-      h2_stream.on(:close) do
-        stream.trigger_callback
-        @mutex.synchronize { @streams.delete(h2_stream.id) }
-      end
-
-      h2_stream
-    end
-
-    def check_streams_timeout
-      return if @streams_timeout_thread
-
-      @streams_timeout_thread = Thread.new do
-
-        loop do
-          cutout_time = Time.now.utc - @timeout
-
-          @mutex.synchronize do
-
-            streams_to_delete = []
-            @streams.each do |h2_stream_id, stream|
-              streams_to_delete << h2_stream_id if stream.sent_at < cutout_time
-            end
-
-            streams_to_delete.each do |id|
-              @streams[id].trigger_timeout
-              @streams.delete(id)
-            end
-          end
-
-          sleep 1
-        end
-      end.tap { |t| t.abort_on_exception = true }
+    def new_stream
+      Apnotic::Stream.new(h2_stream: h2.new_stream)
     end
 
     def open
@@ -135,23 +84,24 @@ module Apnotic
 
         loop do
 
-          begin
-            data_to_send = @pipe_r.read_nonblock(1024)
-            socket.write(data_to_send)
-          rescue IO::WaitReadable, IO::WaitWritable
+          available = socket.pending
+          if available > 0
+            data_received = socket.sysread(available)
+            h2 << data_received
+            break if socket.nil? || socket.closed?
           end
 
-          begin
+          ready = IO.select([socket, @pipe_r])
+
+          if ready[0].include?(@pipe_r)
+            data_to_send = @pipe_r.read_nonblock(1024)
+            socket.write(data_to_send)
+          end
+
+          if ready[0].include?(socket)
             data_received = socket.read_nonblock(1024)
             h2 << data_received
-            break if socket.nil? || socket.closed? || socket.eof?
-
-          rescue IO::WaitReadable
-            IO.select([socket, @pipe_r])
-
-          rescue IO::WaitWritable
-            IO.select([@pipe_r], [socket])
-
+            break if socket.nil? || socket.closed?
           end
         end
 

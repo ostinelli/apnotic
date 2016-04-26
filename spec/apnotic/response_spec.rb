@@ -5,9 +5,7 @@ describe Apnotic::Response do
   describe "attributes" do
     let(:headers) { double(:headers) }
     let(:body) { double(:body) }
-    let(:response) do
-      Apnotic::Response.new(headers: headers, body: body)
-    end
+    let(:response) { Apnotic::Response.new(headers: headers, body: body) }
 
     subject { response }
 
@@ -36,6 +34,22 @@ describe Apnotic::Response do
     context "when status is not 200" do
       let(:status) { :other }
       it { is_expected.to eq false }
+    end
+  end
+
+  describe "#body" do
+    let(:response) { Apnotic::Response.new(body: body) }
+
+    subject { response.body }
+
+    context "when body is a valid json" do
+      let(:body) { '{"one": 1}' }
+      it { should eq({ "one" => 1 }) }
+    end
+
+    context "when body is not a valid json" do
+      let(:body) { '{"one"}' }
+      it { should eq body }
     end
   end
 end

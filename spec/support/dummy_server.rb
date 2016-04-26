@@ -36,9 +36,11 @@ module Apnotic
       end
 
       def listen
+        @server = new_server
+
         @listen_thread = Thread.new do
           loop do
-            Thread.start(server.accept) do |socket|
+            Thread.start(@server.accept) do |socket|
               @threads << Thread.current
               handle(socket)
             end
@@ -50,7 +52,7 @@ module Apnotic
         exit_thread(@listen_thread)
         @threads.each { |t| exit_thread(t) }
 
-        server.close
+        @server.close
 
         @server        = nil
         @ssl_context   = nil
@@ -93,11 +95,9 @@ module Apnotic
         socket.close unless socket.closed?
       end
 
-      def server
-        @server ||= begin
-          s = TCPServer.new(@port)
-          OpenSSL::SSL::SSLServer.new(s, ssl_context)
-        end
+      def new_server
+        s = TCPServer.new(@port)
+        OpenSSL::SSL::SSLServer.new(s, ssl_context)
       end
 
       def ssl_context

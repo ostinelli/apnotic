@@ -25,6 +25,7 @@ module Apnotic
 
       @pipe_r, @pipe_w = Socket.pair(:UNIX, :STREAM, 0)
       @socket_thread   = nil
+      @mutex           = Mutex.new
 
       raise "URI needs to be a HTTPS address" if uri.scheme != 'https'
       raise "Cert file not found: #{@cert_path}" unless @cert_path && File.exists?(@cert_path)
@@ -135,8 +136,10 @@ module Apnotic
     def h2
       @h2 ||= HTTP2::Client.new.tap do |h2|
         h2.on(:frame) do |bytes|
-          @pipe_w.write(bytes)
-          @pipe_w.flush
+          @mutex.synchronize do
+            @pipe_w.write(bytes)
+            @pipe_w.flush
+          end
         end
       end
     end

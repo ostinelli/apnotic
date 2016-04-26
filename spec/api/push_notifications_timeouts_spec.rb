@@ -17,7 +17,7 @@ describe "Triggering timeouts" do
     server.stop
   end
 
-  it "triggers a timeout when no response is received" do
+  it "returns nil when no response is received" do
     notification       = Apnotic::Notification.new(device_id)
     notification.alert = "test-notification"
 
@@ -28,7 +28,7 @@ describe "Triggering timeouts" do
     expect(response).to be_nil
   end
 
-  it "triggers multiple timeouts when no responses are received" do
+  it "returns nil sequentially when no responses are received" do
     notification_1       = Apnotic::Notification.new(device_id)
     notification_1.alert = "test-notification-1"
     notification_2       = Apnotic::Notification.new(device_id)
@@ -39,6 +39,28 @@ describe "Triggering timeouts" do
     responses = []
     responses << connection.push(notification_1, timeout: 1)
     responses << connection.push(notification_2, timeout: 1)
+
+    expect(responses.compact).to be_empty
+  end
+
+  it "returns nil concurrently when no responses are received" do
+    notification_1       = Apnotic::Notification.new(device_id)
+    notification_1.alert = "test-notification-1"
+    notification_2       = Apnotic::Notification.new(device_id)
+    notification_2.alert = "test-notification-2"
+
+    server.on_req = Proc.new { |_req| sleep 2 }
+
+    started_at = Time.now
+
+    responses = []
+    thread = Thread.new { responses << connection.push(notification_1, timeout: 1) }
+    responses << connection.push(notification_2, timeout: 1)
+
+    thread.join
+
+    time_taken = Time.now - started_at
+    expect(time_taken < 2).to eq true
 
     expect(responses.compact).to be_empty
   end

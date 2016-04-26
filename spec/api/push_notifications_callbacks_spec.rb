@@ -17,7 +17,7 @@ describe "Push notification callbacks" do
     server.stop
   end
 
-  it "triggers a callback on response received" do
+  it "returns a response" do
     notification       = Apnotic::Notification.new(device_id)
     notification.alert = "test-notification"
 
@@ -38,7 +38,7 @@ describe "Push notification callbacks" do
     expect(response.body).to eq "response body"
   end
 
-  it "triggers callbacks on multiple responses received" do
+  it "returns multiple responses sequentially" do
     notification_1       = Apnotic::Notification.new(device_id)
     notification_1.alert = "test-notification-1"
     notification_2       = Apnotic::Notification.new(device_id)
@@ -58,6 +58,32 @@ describe "Push notification callbacks" do
     expect(responses.length).to eq 2
 
     response_1, response_2 = responses
+
+    expect(response_1.body).to eq "response body for {\"aps\":{\"alert\":\"test-notification-1\"}}"
+    expect(response_2.body).to eq "response body for {\"aps\":{\"alert\":\"test-notification-2\"}}"
+  end
+
+  it "returns multiple responses concurrently" do
+    notification_1       = Apnotic::Notification.new(device_id)
+    notification_1.alert = "test-notification-1"
+    notification_2       = Apnotic::Notification.new(device_id)
+    notification_2.alert = "test-notification-2"
+
+    server.on_req = Proc.new do |req|
+      res                    = Apnotic::Dummy::Response.new
+      res.headers[":status"] = "200"
+      res.body               = "response body for #{req.body}"
+      res
+    end
+
+    response_1 = nil
+    thread    = Thread.new { response_1 = connection.push(notification_1) }
+    response_2 = connection.push(notification_2)
+
+    thread.join
+
+    expect(response_1).to_not be_nil
+    expect(response_2).to_not be_nil
 
     expect(response_1.body).to eq "response body for {\"aps\":{\"alert\":\"test-notification-1\"}}"
     expect(response_2.body).to eq "response body for {\"aps\":{\"alert\":\"test-notification-2\"}}"

@@ -32,25 +32,25 @@ describe Apnotic::Notification do
     describe "request specifics" do
 
       before do
-        notification.id         = "apns-id"
+        notification.apns_id    = "apns-id"
         notification.expiration = 1461491082
         notification.priority   = 10
         notification.topic      = "com.example.myapp"
       end
 
-      it { is_expected.to have_attributes(id: "apns-id") }
+      it { is_expected.to have_attributes(apns_id: "apns-id") }
       it { is_expected.to have_attributes(expiration: 1461491082) }
       it { is_expected.to have_attributes(priority: 10) }
       it { is_expected.to have_attributes(topic: "com.example.myapp") }
     end
   end
 
-  describe "#id" do
+  describe "#apns_id" do
 
     before { allow(SecureRandom).to receive(:uuid) { "an-auto-generated-uid" } }
 
     it "is initialized as an UUID" do
-      expect(notification.id).to eq "an-auto-generated-uid"
+      expect(notification.apns_id).to eq "an-auto-generated-uid"
     end
   end
 

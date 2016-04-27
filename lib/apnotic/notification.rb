@@ -6,11 +6,11 @@ module Apnotic
   class Notification
     attr_reader :token
     attr_accessor :alert, :badge, :sound, :content_available, :category, :custom_payload
-    attr_accessor :id, :expiration, :priority, :topic
+    attr_accessor :apns_id, :expiration, :priority, :topic
 
     def initialize(token)
-      @token = token
-      @id    = SecureRandom.uuid
+      @token   = token
+      @apns_id = SecureRandom.uuid
     end
 
     def body

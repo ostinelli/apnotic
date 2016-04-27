@@ -34,7 +34,7 @@ describe Apnotic::Stream do
     let(:notification_body) { "notification-body" }
     let(:notification) do
       notification            = Apnotic::Notification.new("phone-token")
-      notification.id         = "apns-id"
+      notification.apns_id    = "apns-id"
       notification.expiration = 1461491082
       notification.priority   = 10
       notification.topic      = "com.example.myapp"

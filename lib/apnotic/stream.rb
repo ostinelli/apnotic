@@ -44,7 +44,7 @@ module Apnotic
         'host'           => @uri.host,
         'content-length' => notification.body.bytesize.to_s
       }
-      headers.merge!('apns-id' => notification.id) if notification.id
+      headers.merge!('apns-id' => notification.apns_id) if notification.apns_id
       headers.merge!('apns-expiration' => notification.expiration) if notification.expiration
       headers.merge!('apns-priority' => notification.priority) if notification.priority
       headers.merge!('apns-topic' => notification.topic) if notification.topic

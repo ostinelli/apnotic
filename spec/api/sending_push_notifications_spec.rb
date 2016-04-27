@@ -33,7 +33,7 @@ describe "Sending Push Notifications" do
     expect(request.headers[":method"]).to eq "POST"
     expect(request.headers[":path"]).to eq "/3/device/#{device_id}"
     expect(request.headers["host"]).to eq "localhost"
-    expect(request.headers["apns-id"]).to eq notification.id
+    expect(request.headers["apns-id"]).to eq notification.apns_id
     expect(request.body).to eq({ aps: { alert: "test-notification" } }.to_json)
   end
 

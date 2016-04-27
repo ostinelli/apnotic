@@ -4,21 +4,12 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'apnotic/version'
 
 Gem::Specification.new do |spec|
-  spec.name        = "apnotic"
-  spec.version     = Apnotic::VERSION
-  spec.authors     = ["Roberto Ostinelli"]
-  spec.email       = ["roberto@ostinelli.net"]
-  spec.summary     = %q{An Apple Push Notification service that uses the latest HTTP2 specifications.}
-  spec.description = %q{An Apple Push Notification service that uses the latest HTTP2 specifications.}
-  spec.homepage    = "http://github.com/ostinelli/apnotic"
-
-  # Prevent pushing this gem to RubyGems.org by setting 'allowed_push_host', or
-  # delete this section to allow pushing this gem to any host.
-  if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
-  else
-    raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
-  end
+  spec.name     = "apnotic"
+  spec.version  = Apnotic::VERSION
+  spec.authors  = ["Roberto Ostinelli"]
+  spec.email    = ["roberto@ostinelli.net"]
+  spec.summary  = %q{Apnotic is an Apple Push Notification gem able to provide instant feedback.}
+  spec.homepage = "http://github.com/ostinelli/apnotic"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"
@@ -26,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "http-2", "~> 0.8.1"
-  spec.add_dependency "connection_pool", "~> 2.2"
+  spec.add_dependency "connection_pool", "~> 2.0"
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake", "~> 10.0"

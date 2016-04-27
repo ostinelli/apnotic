@@ -23,7 +23,7 @@ module Apnotic
       aps = { alert: alert }
       aps.merge!(badge: badge) if badge
       aps.merge!(sound: sound) if sound
-      aps.merge!(content_available: (content_available ? 1 : 0)) if content_available
+      aps.merge!(content_available: content_available) if content_available
       aps.merge!(category: category) if category
 
       n = { aps: aps }

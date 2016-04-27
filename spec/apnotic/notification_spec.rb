@@ -79,45 +79,24 @@ describe Apnotic::Notification do
         notification.alert             = "Something for you!"
         notification.badge             = 22
         notification.sound             = "sound.wav"
+        notification.content_available = 1
         notification.category          = "action_one"
         notification.custom_payload    = { acme1: "bar" }
       end
 
-      context "and content_available is true" do
 
-        before { notification.content_available = true }
-
-        it { eq (
-          {
-            aps:   {
-              alert:             "Something for you!",
-              badge:             22,
-              sound:             "sound.wav",
-              content_available: 1,
-              category:          "action_one"
-            },
-            acme1: "bar"
-          }.to_json
-        ) }
-      end
-
-      context "and content_available is false" do
-
-        before { notification.content_available = false }
-
-        it { eq (
-          {
-            aps:   {
-              alert:             "Something for you!",
-              badge:             22,
-              sound:             "sound.wav",
-              content_available: 0,
-              category:          "action_one"
-            },
-            acme1: "bar"
-          }.to_json
-        ) }
-      end
+      it { eq (
+        {
+          aps:   {
+            alert:             "Something for you!",
+            badge:             22,
+            sound:             "sound.wav",
+            content_available: 1,
+            category:          "action_one"
+          },
+          acme1: "bar"
+        }.to_json
+      ) }
     end
   end
 end

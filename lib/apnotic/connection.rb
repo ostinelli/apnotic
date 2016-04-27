@@ -76,7 +76,7 @@ module Apnotic
         if available > 0
           data_received = socket.sysread(available)
           h2 << data_received
-          break if socket.nil? || socket.closed?
+          break if socket.closed?
         end
 
         ready = IO.select([socket, @pipe_r])
@@ -89,7 +89,7 @@ module Apnotic
         if ready[0].include?(socket)
           data_received = socket.read_nonblock(1024)
           h2 << data_received
-          break if socket.nil? || socket.closed?
+          break if socket.closed?
         end
       end
     end

@@ -6,6 +6,7 @@ require 'apnotic/version'
 Gem::Specification.new do |spec|
   spec.name     = "apnotic"
   spec.version  = Apnotic::VERSION
+  spec.licenses = ['MIT']
   spec.authors  = ["Roberto Ostinelli"]
   spec.email    = ["roberto@ostinelli.net"]
   spec.summary  = %q{Apnotic is an Apple Push Notification gem able to provide instant feedback.}

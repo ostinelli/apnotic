@@ -2,6 +2,8 @@ module Apnotic
 
   class Stream
 
+    DEFAULT_TIMEOUT = 30
+
     def initialize(options={})
       @h2_stream = options[:h2_stream]
       @uri       = options[:uri]
@@ -52,6 +54,8 @@ module Apnotic
     end
 
     def respond(options={})
+      options[:timeout] ||= DEFAULT_TIMEOUT
+
       @mutex.synchronize { @cv.wait(@mutex, options[:timeout]) }
 
       if @completed

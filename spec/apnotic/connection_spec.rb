@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Apnotic::Connection do
   let(:uri) { "https://localhost" }
-  let(:cert_path) { cert_file_path }
+  let(:cert_path) { apn_file_path }
   let(:connection) do
     Apnotic::Connection.new({
       uri:       uri,
@@ -69,6 +69,21 @@ describe Apnotic::Connection do
           expect { connection }.to raise_error "Cert file not found: /non-existant.crt"
         end
       end
+
+      context "when it is a p12 file" do
+        it "is equivalent to a pem file" do
+          p12_connection = Apnotic::Connection.new(uri: uri, cert_path: apn_p12_file_path)
+          expect(connection.send(:certificate)).to eq p12_connection.send(:certificate)
+        end
+      end
+
+      context "when it is a IO object" do
+        it "is equivalent to a file path" do
+          io_connection = Apnotic::Connection.new(uri: uri, cert_path: StringIO.new(File.read(apn_file_path)))
+          expect(connection.send(:certificate)).to eq io_connection.send(:certificate)
+        end
+      end
+
     end
   end
 

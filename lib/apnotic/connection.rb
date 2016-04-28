@@ -28,7 +28,7 @@ module Apnotic
       @mutex           = Mutex.new
 
       raise "URI needs to be a HTTPS address" if uri.scheme != 'https'
-      raise "Cert file not found: #{@cert_path}" unless @cert_path && File.exist?(@cert_path)
+      raise "Cert file not found: #{@cert_path}" unless @cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))
     end
 
     def push(notification, options={})
@@ -108,10 +108,10 @@ module Apnotic
     def ssl_context
       @ssl_context ||= begin
         ctx         = OpenSSL::SSL::SSLContext.new
-        certificate = File.read(@cert_path)
+        cert        = certificate
         passphrase  = @cert_pass
-        ctx.key     = OpenSSL::PKey::RSA.new(certificate, passphrase)
-        ctx.cert    = OpenSSL::X509::Certificate.new(certificate)
+        ctx.key     = OpenSSL::PKey::RSA.new(cert, passphrase)
+        ctx.cert    = OpenSSL::X509::Certificate.new(cert)
         ctx
       end
     end
@@ -132,5 +132,24 @@ module Apnotic
       thread.exit
       thread.join
     end
+
+    def certificate
+      @certificate ||= begin
+        if @cert_path.respond_to?(:read)
+          cert = @cert_path.read
+          @cert_path.rewind if @cert_path.respond_to?(:rewind)
+        else
+          cert = File.read(@cert_path)
+        end
+        begin
+          cert = OpenSSL::PKCS12.new(cert, @cert_pass)
+          cert = cert.certificate.to_pem + cert.key.to_pem
+          @cert_pass = nil
+        rescue OpenSSL::PKCS12::PKCS12Error
+        end
+        cert
+      end
+    end
+
   end
 end

@@ -28,7 +28,11 @@ module Apnotic
 
     def push(notification, options={})
       request  = Apnotic::Request.new(notification)
-      response = @client.post(request.path, request.body, request.headers, timeout: options[:timeout])
+      response = @client.call(:post, request.path,
+        body:    request.body,
+        headers: request.headers,
+        timeout: options[:timeout]
+      )
       Apnotic::Response.new(headers: response.headers, body: response.body) if response
     end
 

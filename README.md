@@ -166,6 +166,7 @@ These are all Accessor attributes.
 | `expiration` | "
 | `priority` | "
 | `topic` | "
+| `url_args` | `Array` Values for [Safari push notifications](https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NotificationProgrammingGuideForWebsites/PushNotifications/PushNotifications.html#//apple_ref/doc/uid/TP40013225-CH3-SW12)
 
 For example:
 
@@ -177,6 +178,17 @@ notification.sound    = "bells.wav"
 notification.priority = 5
 ```
 
+For a [Safari push notification](https://developer.apple.com/notifications/safari-push-notifications/):
+
+```ruby
+notification = Apnotic::Notification.new(token)
+notification.alert = {
+  title: "Flight A998 Now Boarding",
+  body: "Boarding has begun for Flight A998.",
+  action: "View"
+}
+notification.url_args = ["boarding", "A998"]
+```
 
 ### `Apnotic::Response`
 The response to a call to `connection.push`.

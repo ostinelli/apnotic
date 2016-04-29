@@ -98,5 +98,30 @@ describe Apnotic::Notification do
         }.to_json
       ) }
     end
+
+    context "when sending Safari push notifications" do
+
+      before do
+        notification.alert = {
+          title: "Flight A998 Now Boarding",
+          body: "Boarding has begun for Flight A998.",
+          action: "View"
+        }
+        notification.url_args = [1, 2]
+      end
+
+      it { is_expected.to eq (
+        {
+          aps:   {
+            alert: {
+              title: "Flight A998 Now Boarding",
+              body: "Boarding has begun for Flight A998.",
+              action: "View"
+            },
+            'url-args' => [1, 2]
+          }
+        }.to_json
+      ) }
+    end
   end
 end

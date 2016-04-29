@@ -1,8 +1,8 @@
 require 'apnotic/connection'
 require 'apnotic/connection_pool'
 require 'apnotic/notification'
+require 'apnotic/request'
 require 'apnotic/response'
-require 'apnotic/stream'
 require 'apnotic/version'
 
 module Apnotic

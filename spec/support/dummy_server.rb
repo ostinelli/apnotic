@@ -103,8 +103,8 @@ module Apnotic
       def ssl_context
         @ssl_context ||= begin
           ctx      = OpenSSL::SSL::SSLContext.new
-          ctx.cert = OpenSSL::X509::Certificate.new(File.open(cert_file_path))
-          ctx.key  = OpenSSL::PKey::RSA.new(File.open(key_file_path))
+          ctx.cert = OpenSSL::X509::Certificate.new(File.open(server_cert_file_path))
+          ctx.key  = OpenSSL::PKey::RSA.new(File.open(server_key_file_path))
           ctx
         end
       end

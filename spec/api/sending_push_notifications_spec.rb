@@ -5,7 +5,7 @@ describe "Sending Push Notifications" do
   let(:server) { Apnotic::Dummy::Server.new(port: port) }
   let(:connection) do
     Apnotic::Connection.new(
-      uri:       "https://localhost:#{port}",
+      url:       "https://localhost:#{port}",
       cert_path: apn_file_path
     )
   end
@@ -24,9 +24,7 @@ describe "Sending Push Notifications" do
     request       = nil
     server.on_req = Proc.new { |req| request = req }
 
-    response = connection.push(notification)
-
-    expect(response).to be_a Apnotic::Response
+    connection.push(notification)
 
     expect(request).not_to be_nil
     expect(request.headers[":scheme"]).to eq "https"
@@ -37,58 +35,35 @@ describe "Sending Push Notifications" do
     expect(request.body).to eq({ aps: { alert: "test-notification" } }.to_json)
   end
 
-  it "sends multiple notifications sequentially" do
-    notification_1       = Apnotic::Notification.new(device_id)
-    notification_1.alert = "test-notification-1"
-    notification_2       = Apnotic::Notification.new(device_id)
-    notification_2.alert = "test-notification-2"
+  it "returns a response" do
+    notification       = Apnotic::Notification.new(device_id)
+    notification.alert = "test-notification"
 
-    requests      = []
-    server.on_req = Proc.new { |req| requests << req }
+    server.on_req = Proc.new do |_req|
+      res                    = Apnotic::Dummy::Response.new
+      res.headers[":status"] = "200"
+      res.body               = "response body"
+      res
+    end
 
-    response_1 = connection.push(notification_1)
-    response_2 = connection.push(notification_2)
+    response = connection.push(notification)
 
-    expect(response_1).to be_a Apnotic::Response
-    expect(response_2).to be_a Apnotic::Response
+    expect(response).to be_a Apnotic::Response
 
-    request_1, request_2 = requests
-    expect(request_1).not_to be_nil
-    expect(request_2).not_to be_nil
-
-    expect(request_1.body).to eq({ aps: { alert: "test-notification-1" } }.to_json)
-    expect(request_2.body).to eq({ aps: { alert: "test-notification-2" } }.to_json)
+    expect(response.ok?).to eq true
+    expect(response.status).to eq "200"
+    expect(response.headers[":status"]).to eq "200"
+    expect(response.body).to eq "response body"
   end
 
-  it "sends multiple notifications concurrently" do
-    notification_1       = Apnotic::Notification.new(device_id)
-    notification_1.alert = "test-notification-1"
-    notification_2       = Apnotic::Notification.new(device_id)
-    notification_2.alert = "test-notification-2"
+  it "returns nil when no response is received" do
+    notification       = Apnotic::Notification.new(device_id)
+    notification.alert = "test-notification"
 
-    requests      = []
-    server.on_req = Proc.new { |req| requests << req }
+    server.on_req = Proc.new { |_req| sleep 2 }
 
-    response_1 = nil
-    thread     = Thread.new { response_1 = connection.push(notification_1) }
-    response_2 = connection.push(notification_2)
+    response = connection.push(notification, timeout: 1)
 
-    thread.join
-
-    expect(response_1).to be_a Apnotic::Response
-    expect(response_2).to be_a Apnotic::Response
-
-    request_1, request_2 = requests
-    expect(request_1).not_to be_nil
-    expect(request_2).not_to be_nil
-
-    expected_bodies = [
-      { aps: { alert: "test-notification-1" } }.to_json,
-      { aps: { alert: "test-notification-2" } }.to_json
-    ]
-
-    received_bodies = [request_1.body, request_2.body]
-
-    expect(expected_bodies).to match_array received_bodies
+    expect(response).to be_nil
   end
 end

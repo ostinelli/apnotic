@@ -5,7 +5,7 @@ describe "Errors" do
   let(:server) { Apnotic::Dummy::Server.new(port: port) }
   let(:connection) do
     Apnotic::Connection.new(
-      uri:       "https://localhost:#{port}",
+      url:       "https://localhost:#{port}",
       cert_path: apn_file_path
     )
   end

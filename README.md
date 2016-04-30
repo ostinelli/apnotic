@@ -157,15 +157,15 @@ These are all Accessor attributes.
 | Method | Documentation
 |-----|-----
 | `alert` | Refer to the official Apple documentation of [The Notification Payload](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html) for details.
-| `badge` | "
-| `sound` | "
-| `content_available` | "
-| `category` | "
-| `custom_payload` | "
+| `badge` | `Integer` The number to display as the badge of the app icon.
+| `sound` | `String` The name of a sound file in the app bundle or in the Library/Sounds folder
+| `content_available` | `Integer` 1 to indicate that new content is available
+| `category` | `String` Value that represents the identifier property of the `UIMutableUserNotificationCategory`
+| `custom_payload` | Anything that can be turned into valid JSON
 | `apns_id` | Refer to the [APNs Provider API](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html) for details. If you don't provide any, one will be generated for you.
-| `expiration` | "
-| `priority` | "
-| `topic` | "
+| `expiration` | A UNIX epoch date expressed in seconds, eg `Time.now.to_i`
+| `priority` | `10`: send immediately, `5` lower priority, takes device power into consideration
+| `topic` | If your certificate includes multiple topics, you must specify a value for this header.
 | `url_args` | `Array` Values for [Safari push notifications](https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NotificationProgrammingGuideForWebsites/PushNotifications/PushNotifications.html#//apple_ref/doc/uid/TP40013225-CH3-SW12)
 
 For example:

@@ -105,7 +105,7 @@ Apnotic::Connection.new(options)
 
 | Option | Description
 |-----|-----
-| :cert_path | Required. The path to a valid APNS push certificate in .pem format (see "Convert your certificate" here below for instructions).
+| :cert_path | Required. The path to a valid APNS push certificate in .pem or .p12 format, or any object that responds to `:read` (see [Converting Your Certificate](#converting-your-certificate) here below for instructions).
 | :cert_pass | Optional. The certificate's password.
 | :uri | Optional. Defaults to https://api.push.apple.com:443.
 
@@ -206,7 +206,7 @@ Once you have the certificate from Apple for your application, export your key a
 2. Right click and choose `Export 2 items…`. 
 3. Choose the p12 format from the drop down and name it `cert.p12`.
 
-Now covert the p12 file to a pem file:
+Now covert the p12 file to a pem file (this step is optional because Apnotic natively supports p12 files):
 ```
 $ openssl pkcs12 -in cert.p12 -out apple_push_notification_production.pem -nodes -clcerts
 ```

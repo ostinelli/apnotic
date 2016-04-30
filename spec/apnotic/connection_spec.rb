@@ -48,6 +48,22 @@ describe Apnotic::Connection do
           expect { connection }.to raise_error "Cert file not found: /non-existant.crt"
         end
       end
+
+      context "when it is a p12 file" do
+        it "is equivalent to a pem file" do
+          p12_connection = Apnotic::Connection.new(url: url, cert_path: apn_p12_file_path)
+          expect(connection.send(:ssl_context).key.to_pem).to eq p12_connection.send(:ssl_context).key.to_pem
+          expect(connection.send(:ssl_context).cert.to_pem).to eq p12_connection.send(:ssl_context).cert.to_pem
+        end
+      end
+
+      context "when it is a IO object" do
+        it "is equivalent to a file path" do
+          io_connection = Apnotic::Connection.new(url: url, cert_path: StringIO.new(File.read(apn_file_path)))
+          expect(connection.send(:ssl_context).key.to_pem).to eq io_connection.send(:ssl_context).key.to_pem
+          expect(connection.send(:ssl_context).cert.to_pem).to eq io_connection.send(:ssl_context).cert.to_pem
+        end
+      end
     end
   end
 

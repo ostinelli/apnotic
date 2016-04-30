@@ -21,7 +21,7 @@ module Apnotic
       @cert_path = options[:cert_path]
       @cert_pass = options[:cert_pass]
 
-      raise "Cert file not found: #{@cert_path}" unless @cert_path && File.exist?(@cert_path)
+      raise "Cert file not found: #{@cert_path}" unless @cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))
 
       @client = NetHttp2::Client.new(@url, ssl_context: ssl_context)
     end
@@ -44,11 +44,28 @@ module Apnotic
 
     def ssl_context
       @ssl_context ||= begin
-        ctx         = OpenSSL::SSL::SSLContext.new
-        certificate = File.read(@cert_path)
-        ctx.key     = OpenSSL::PKey::RSA.new(certificate, @cert_pass)
-        ctx.cert    = OpenSSL::X509::Certificate.new(certificate)
+        ctx = OpenSSL::SSL::SSLContext.new
+        begin
+          p12 = OpenSSL::PKCS12.new(certificate, @cert_pass)
+          ctx.key  = p12.key
+          ctx.cert = p12.certificate
+        rescue OpenSSL::PKCS12::PKCS12Error
+          ctx.key  = OpenSSL::PKey::RSA.new(certificate, @cert_pass)
+          ctx.cert = OpenSSL::X509::Certificate.new(certificate)
+        end
         ctx
+      end
+    end
+
+    def certificate
+      @certificate ||= begin
+        if @cert_path.respond_to?(:read)
+          cert = @cert_path.read
+          @cert_path.rewind if @cert_path.respond_to?(:rewind)
+        else
+          cert = File.read(@cert_path)
+        end
+        cert
       end
     end
   end

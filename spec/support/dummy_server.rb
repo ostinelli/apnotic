@@ -1,3 +1,5 @@
+require_relative 'api_helpers'
+
 module Apnotic
 
   module Dummy

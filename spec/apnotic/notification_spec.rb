@@ -58,12 +58,20 @@ describe Apnotic::Notification do
 
     subject { notification.body }
 
+    context "when nothing is specified" do
+
+      it { is_expected.to eq (
+        {
+          aps: {}
+        }.to_json
+      ) }
+    end
+
     context "when only alert is specified" do
 
       before do
         notification.alert = "Something for you!"
       end
-
 
       it { is_expected.to eq (
         {

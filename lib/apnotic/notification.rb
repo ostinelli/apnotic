@@ -20,7 +20,9 @@ module Apnotic
     private
 
     def to_hash
-      aps = { alert: alert }
+      aps = {}
+
+      aps.merge!(alert: alert) if alert
       aps.merge!(badge: badge) if badge
       aps.merge!(sound: sound) if sound
       aps.merge!(category: category) if category

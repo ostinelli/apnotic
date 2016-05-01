@@ -7,7 +7,7 @@ Apnotic is a gem for sending Apple Push Notifications using the [HTTP-2 specific
 
 
 ## Why "Yet Another APN" gem?
-If you have used the previous Apple Push Notification specifications you may have noticed that it was hard to know whether a Push Notification was successful or not. It is a common problem that has been reported multiple times. In addition, you had to run a separate Feedback service to retrieve the list of the device tokens that were no longer valid, and ensure to purge them from your systems.
+If you have used the previous Apple Push Notification specifications you may have noticed that it was hard to know whether a Push Notification was successful or not. It was a common problem that has been reported multiple times. In addition, you had to run a separate Feedback service to retrieve the list of the device tokens that were no longer valid, and ensure to purge them from your systems.
 
 All of this is solved by using the HTTP-2 APN specifications. Every Push Notification you make returns a response stating if the Push was successful or, if not, which problems were encountered. This includes the case when invalid device tokens are used, hence making it unnecessary to have a separate Feedback service.
 
@@ -52,14 +52,14 @@ response.body     # => ""
 connection.close
 ```
 
-### With Sidekiq / Rescue
-A practical example of a Sidekiq / Rescue worker will probably have to:
+### With Sidekiq / Rescue / ...
+A practical usage of a Sidekiq / Rescue worker probably has to:
 
  * Use a pool of persistent connections.
  * Send a push notification.
  * Remove a device with an invalid token. 
 
-An example of a Sidekiq worker with such features follows.
+An example of a Sidekiq worker with such features follows. This presumes a Rails environment, and a model `Device`.
 
 ```ruby
 require 'apnotic'
@@ -105,7 +105,7 @@ Apnotic::Connection.new(options)
 
 | Option | Description
 |-----|-----
-| :cert_path | Required. The path to a valid APNS push certificate in .pem or .p12 format, or any object that responds to `:read` (see [Converting Your Certificate](#converting-your-certificate) here below for instructions).
+| :cert_path | Required. The path to a valid APNS push certificate in .pem or .p12 format, or any object that responds to `:read`.
 | :cert_pass | Optional. The certificate's password.
 | :uri | Optional. Defaults to https://api.push.apple.com:443.
 
@@ -120,12 +120,15 @@ Apnotic::Connection.development(options)
 #### Methods
 
  * **uri** → **`URI`**
+ 
  Returns the URI of the APNS endpoint.
 
  * **cert_path** → **`string`**
+ 
  Returns the path to the certificate
  
  * **push(notification, timeout=30)** → **`Apnotic::Response` or `nil`**
+ 
  Sends a notification. Returns `nil` in case a timeout occurs.
 
 
@@ -157,16 +160,16 @@ These are all Accessor attributes.
 | Method | Documentation
 |-----|-----
 | `alert` | Refer to the official Apple documentation of [The Notification Payload](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html) for details.
-| `badge` | `Integer` The number to display as the badge of the app icon.
-| `sound` | `String` The name of a sound file in the app bundle or in the Library/Sounds folder
-| `content_available` | `Integer` 1 to indicate that new content is available
-| `category` | `String` Value that represents the identifier property of the `UIMutableUserNotificationCategory`
-| `custom_payload` | Anything that can be turned into valid JSON
-| `apns_id` | Refer to the [APNs Provider API](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html) for details. If you don't provide any, one will be generated for you.
-| `expiration` | A UNIX epoch date expressed in seconds, eg `Time.now.to_i`
-| `priority` | `10`: send immediately, `5` lower priority, takes device power into consideration
-| `topic` | If your certificate includes multiple topics, you must specify a value for this header.
-| `url_args` | `Array` Values for [Safari push notifications](https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NotificationProgrammingGuideForWebsites/PushNotifications/PushNotifications.html#//apple_ref/doc/uid/TP40013225-CH3-SW12)
+| `badge` | "
+| `sound` | "
+| `content_available` | "
+| `category` | "
+| `custom_payload` | "
+| `apns_id` | Refer to the [APNs Provider API](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html) for details.
+| `expiration` | "
+| `priority` | "
+| `topic` | "
+| `url_args` | Values for [Safari push notifications](https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NotificationProgrammingGuideForWebsites/PushNotifications/PushNotifications.html#//apple_ref/doc/uid/TP40013225-CH3-SW12).
 
 For example:
 
@@ -182,9 +185,10 @@ For a [Safari push notification](https://developer.apple.com/notifications/safar
 
 ```ruby
 notification = Apnotic::Notification.new(token)
-notification.alert = {
-  title: "Flight A998 Now Boarding",
-  body: "Boarding has begun for Flight A998.",
+
+notification.alert    = {
+  title:  "Flight A998 Now Boarding",
+  body:   "Boarding has begun for Flight A998.",
   action: "View"
 }
 notification.url_args = ["boarding", "A998"]
@@ -196,19 +200,23 @@ The response to a call to `connection.push`.
 #### Methods
 
  * **headers** → **`hash`**
+ 
  Returns a Hash containing the Headers of the response.
 
  * **status** → **`string`**
+ 
  Returns the status code.
 
  * **body** → **`hash` or `string`**
+ 
  Returns the body of the response in Hash format if a valid JSON was returned, otherwise just the RAW body.
 
  * **headers** → **`boolean`**
+ 
  Returns if the push was successful.
 
 
-## Converting Your Certificate
+## Getting Your APNs Certificate
 
 > These instructions come from another great gem, [apn_on_rails](https://github.com/PRX/apn_on_rails).
 
@@ -218,7 +226,7 @@ Once you have the certificate from Apple for your application, export your key a
 2. Right click and choose `Export 2 items…`. 
 3. Choose the p12 format from the drop down and name it `cert.p12`.
 
-Now covert the p12 file to a pem file (this step is optional because Apnotic natively supports p12 files):
+Optionally, you may covert the p12 file to a pem file (this step is optional because Apnotic natively supports p12 files):
 ```
 $ openssl pkcs12 -in cert.p12 -out apple_push_notification_production.pem -nodes -clcerts
 ```

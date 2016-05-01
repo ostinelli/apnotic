@@ -17,15 +17,6 @@ module Apnotic
       end
     end
 
-    class Response
-      attr_accessor :body, :headers
-
-      def initialize
-        @headers = { ":status" => "200" }
-        @body    = ''
-      end
-    end
-
     class Server
       include Apnotic::ApiHelpers
 
@@ -77,7 +68,10 @@ module Apnotic
           stream.on(:half_close) do
             # callbacks
             res = on_req.call(req) if on_req
-            res = Response.new unless res.is_a?(Response)
+            res = NetHttp2::Response.new(
+              headers: { ":status" => "200" },
+              body:    "response body"
+            ) unless res.is_a?(Response)
 
             stream.headers({
               ':status'        => res.headers[":status"],

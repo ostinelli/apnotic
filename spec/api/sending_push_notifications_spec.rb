@@ -40,10 +40,10 @@ describe "Sending Push Notifications" do
     notification.alert = "test-notification"
 
     server.on_req = Proc.new do |_req|
-      res                    = Apnotic::Dummy::Response.new
-      res.headers[":status"] = "200"
-      res.body               = "response body"
-      res
+      NetHttp2::Response.new(
+        headers: { ":status" => "200" },
+        body:    "response body"
+      )
     end
 
     response = connection.push(notification)

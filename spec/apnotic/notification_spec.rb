@@ -64,7 +64,8 @@ describe Apnotic::Notification do
         notification.alert = "Something for you!"
       end
 
-      it { eq (
+
+      it { is_expected.to eq (
         {
           aps: {
             alert: "Something for you!"
@@ -84,15 +85,14 @@ describe Apnotic::Notification do
         notification.custom_payload    = { acme1: "bar" }
       end
 
-
-      it { eq (
+      it { is_expected.to eq (
         {
-          aps:   {
+          aps: {
             alert:             "Something for you!",
             badge:             22,
             sound:             "sound.wav",
-            content_available: 1,
-            category:          "action_one"
+            category:          "action_one",
+            'content-available' => 1
           },
           acme1: "bar"
         }.to_json

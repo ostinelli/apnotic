@@ -34,7 +34,7 @@ require 'apnotic'
 # create a persistent connection
 connection = Apnotic::Connection.new(cert_path: "apns_certificate.pem", cert_pass: "pass")
 
-# create a notification for a specific device token 
+# create a notification for a specific device token
 token = "6c267f26b173cd9595ae2f6702b1ab560371a60e7c8a9e27419bd0fa4a42e58f"
 
 notification       = Apnotic::Notification.new(token)
@@ -58,7 +58,7 @@ A practical usage of a Sidekiq / Rescue worker probably has to:
 
  * Use a pool of persistent connections.
  * Send a push notification.
- * Remove a device with an invalid token. 
+ * Remove a device with an invalid token.
 
 An example of a Sidekiq worker with such features follows. This presumes a Rails environment, and a model `Device`.
 
@@ -116,20 +116,20 @@ It is also possible to create a connection that points to the Apple Development 
 Apnotic::Connection.development(options)
 ```
 
-> The concepts of PRODUCTION and DEVELOPMENT are different from what they used to be in previous specifications. Anything built directly from XCode and loaded on your phone will have the app generate DEVELOPMENT tokens, while everything else (TestFlight, Apple Store, HockeyApp, ...) will be considered as PRODUCTION environment. 
+> The concepts of PRODUCTION and DEVELOPMENT are different from what they used to be in previous specifications. Anything built directly from XCode and loaded on your phone will have the app generate DEVELOPMENT tokens, while everything else (TestFlight, Apple Store, HockeyApp, ...) will be considered as PRODUCTION environment.
 
 #### Methods
 
  * **uri** → **`URI`**
- 
+
  Returns the URI of the APNS endpoint.
 
  * **cert_path** → **`string`**
- 
+
  Returns the path to the certificate
- 
+
  * **push(notification, timeout=30)** → **`Apnotic::Response` or `nil`**
- 
+
  Sends a notification. Returns `nil` in case a timeout occurs.
 
 
@@ -200,21 +200,21 @@ The response to a call to `connection.push`.
 
 #### Methods
 
+ * **ok?** → **`boolean`**
+
+ Returns if the push was successful.
+
  * **headers** → **`hash`**
- 
+
  Returns a Hash containing the Headers of the response.
 
  * **status** → **`string`**
- 
+
  Returns the status code.
 
  * **body** → **`hash` or `string`**
- 
- Returns the body of the response in Hash format if a valid JSON was returned, otherwise just the RAW body.
 
- * **headers** → **`boolean`**
- 
- Returns if the push was successful.
+ Returns the body of the response in Hash format if a valid JSON was returned, otherwise just the RAW body.
 
 
 ## Getting Your APNs Certificate
@@ -223,8 +223,8 @@ The response to a call to `connection.push`.
 
 Once you have the certificate from Apple for your application, export your key and the apple certificate as p12 files. Here is a quick walkthrough on how to do this:
 
-1. Click the disclosure arrow next to your certificate in Keychain Access and select the certificate and the key. 
-2. Right click and choose `Export 2 items…`. 
+1. Click the disclosure arrow next to your certificate in Keychain Access and select the certificate and the key.
+2. Right click and choose `Export 2 items…`.
 3. Choose the p12 format from the drop down and name it `cert.p12`.
 
 Optionally, you may covert the p12 file to a pem file (this step is optional because Apnotic natively supports p12 files):

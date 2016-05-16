@@ -41,7 +41,7 @@ notification       = Apnotic::Notification.new(token)
 notification.alert = "Notification from Apnotic!"
 
 # send (this is a blocking call)
-response = connection.push(notification)
+response = connection.push(notification, timeout: 30)
 
 # read the response
 response.ok?      # => true
@@ -80,7 +80,7 @@ class MyWorker
       notification       = Apnotic::Notification.new(token)
       notification.alert = "Hello from Apnotic!"
 
-      response = connection.push(notification)
+      response = connection.push(notification, timeout: 30)
 
       if response.status == '410' ||
         (response.status == '400' && response.body['reason'] == 'BadDeviceToken')
@@ -128,7 +128,7 @@ Apnotic::Connection.development(options)
 
  Returns the path to the certificate
 
- * **push(notification, timeout=30)** → **`Apnotic::Response` or `nil`**
+ * **push(notification, timeout: 30)** → **`Apnotic::Response` or `nil`**
 
  Sends a notification. Returns `nil` in case a timeout occurs.
 

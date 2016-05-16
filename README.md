@@ -108,7 +108,7 @@ Apnotic::Connection.new(options)
 |-----|-----
 | :cert_path | Required. The path to a valid APNS push certificate in .pem or .p12 format, or any object that responds to `:read`.
 | :cert_pass | Optional. The certificate's password.
-| :uri | Optional. Defaults to https://api.push.apple.com:443.
+| :url | Optional. Defaults to https://api.push.apple.com:443.
 
 It is also possible to create a connection that points to the Apple Development servers by calling instead:
 
@@ -120,9 +120,9 @@ Apnotic::Connection.development(options)
 
 #### Methods
 
- * **uri** → **`URI`**
+ * **url** → **`URL`**
 
- Returns the URI of the APNS endpoint.
+ Returns the URL of the APNS endpoint.
 
  * **cert_path** → **`string`**
 

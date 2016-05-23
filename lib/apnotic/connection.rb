@@ -17,13 +17,14 @@ module Apnotic
     end
 
     def initialize(options={})
-      @url       = options[:url] || APPLE_PRODUCTION_SERVER_URL
-      @cert_path = options[:cert_path]
-      @cert_pass = options[:cert_pass]
+      @url                = options[:url] || APPLE_PRODUCTION_SERVER_URL
+      @cert_path          = options[:cert_path]
+      @cert_pass          = options[:cert_pass]
+      @connection_timeout = options[:connection_timeout] || 30
 
       raise "Cert file not found: #{@cert_path}" unless @cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))
 
-      @client = NetHttp2::Client.new(@url, ssl_context: ssl_context)
+      @client = NetHttp2::Client.new(@url, ssl_context: ssl_context, connection_timeout: @connection_timeout)
     end
 
     def push(notification, options={})
@@ -46,7 +47,7 @@ module Apnotic
       @ssl_context ||= begin
         ctx = OpenSSL::SSL::SSLContext.new
         begin
-          p12 = OpenSSL::PKCS12.new(certificate, @cert_pass)
+          p12      = OpenSSL::PKCS12.new(certificate, @cert_pass)
           ctx.key  = p12.key
           ctx.cert = p12.certificate
         rescue OpenSSL::PKCS12::PKCS12Error

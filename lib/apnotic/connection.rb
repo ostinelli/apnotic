@@ -3,21 +3,21 @@ require 'openssl'
 
 module Apnotic
 
-  APPLE_DEVELOPMENT_SERVER_URI = "https://api.development.push.apple.com:443"
-  APPLE_PRODUCTION_SERVER_URI  = "https://api.push.apple.com:443"
+  APPLE_DEVELOPMENT_SERVER_URL = "https://api.development.push.apple.com:443"
+  APPLE_PRODUCTION_SERVER_URL  = "https://api.push.apple.com:443"
 
   class Connection
     attr_reader :url, :cert_path
 
     class << self
       def development(options={})
-        options.merge!(url: APPLE_DEVELOPMENT_SERVER_URI)
+        options.merge!(url: APPLE_DEVELOPMENT_SERVER_URL)
         new(options)
       end
     end
 
     def initialize(options={})
-      @url       = options[:url] || APPLE_PRODUCTION_SERVER_URI
+      @url       = options[:url] || APPLE_PRODUCTION_SERVER_URL
       @cert_path = options[:cert_path]
       @cert_pass = options[:cert_pass]
 

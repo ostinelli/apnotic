@@ -128,7 +128,7 @@ Apnotic::Connection.development(options)
 
  Returns the path to the certificate
 
- * **push(notification, timeout=30)** → **`Apnotic::Response` or `nil`**
+ * **push(notification, timeout: 30)** → **`Apnotic::Response` or `nil`**
 
  Sends a notification. Returns `nil` in case a timeout occurs.
 

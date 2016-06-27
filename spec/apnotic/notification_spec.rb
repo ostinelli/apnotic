@@ -91,6 +91,7 @@ describe Apnotic::Notification do
         notification.content_available = 1
         notification.category          = "action_one"
         notification.custom_payload    = { acme1: "bar" }
+        notification.mutable_content   = 1
       end
 
       it { is_expected.to eq (
@@ -100,7 +101,8 @@ describe Apnotic::Notification do
             badge:             22,
             sound:             "sound.wav",
             category:          "action_one",
-            'content-available' => 1
+            'content-available' => 1,
+            'mutable-content'   => 1
           },
           acme1: "bar"
         }.to_json

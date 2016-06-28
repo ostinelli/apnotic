@@ -170,9 +170,25 @@ Apnotic::Connection.development(options)
 
  Returns the path to the certificate
 
+##### Blocking calls
+
  * **push(notification, timeout: 30)** → **`Apnotic::Response` or `nil`**
 
  Sends a notification. Returns `nil` in case a timeout occurs.
+
+##### Non-blocking calls
+
+ * **prepare_push(notification)** → **`Apnotic::Push`**
+
+ Prepares an async push.
+
+ ```ruby
+ push = client.prepare_push(notification)
+ ```
+
+ * **push_async(push)**
+
+  Sends the push asynchronously.
 
 
 ### `Apnotic::ConnectionPool`
@@ -257,6 +273,29 @@ The response to a call to `connection.push`.
  * **body** → **`hash` or `string`**
 
  Returns the body of the response in Hash format if a valid JSON was returned, otherwise just the RAW body.
+
+
+### `Apnotic::Push`
+The push object to be sent in an async call.
+
+#### Methods
+
+ * **on(event, &block)**
+
+ Allows to set a callback for the request. Available events are:
+
+  * `:response`: triggered when a response is fully received (called once).
+
+ Even if Apnotic is thread-safe, the async callbacks will be executed in a different thread, so ensure that your code in the callbacks is thread-safe.
+
+ ```ruby
+ push.on(:response) { |response| p response.headers }
+ ```
+
+ * **http2_request**  → **`NetHttp2::Request`**
+ 
+ Returns the HTTP/2 request of the push.
+
 
 
 ## Getting Your APNs Certificate

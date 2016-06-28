@@ -229,6 +229,7 @@ These are all Accessor attributes.
 | `priority` | "
 | `topic` | "
 | `url_args` | Values for [Safari push notifications](https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NotificationProgrammingGuideForWebsites/PushNotifications/PushNotifications.html#//apple_ref/doc/uid/TP40013225-CH3-SW12).
+| `mutable_content` | Key for [UNNotificationServiceExtension](https://developer.apple.com/reference/usernotifications/unnotificationserviceextension).
 
 For example:
 

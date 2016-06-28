@@ -17,9 +17,9 @@ module Apnotic
     end
 
     def initialize(options={})
-      @url                = options[:url] || APPLE_PRODUCTION_SERVER_URL
-      @cert_path          = options[:cert_path]
-      @cert_pass          = options[:cert_pass]
+      @url             = options[:url] || APPLE_PRODUCTION_SERVER_URL
+      @cert_path       = options[:cert_path]
+      @cert_pass       = options[:cert_pass]
       @connect_timeout = options[:connect_timeout] || 30
 
       raise "Cert file not found: #{@cert_path}" unless @cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))
@@ -37,8 +37,25 @@ module Apnotic
       Apnotic::Response.new(headers: response.headers, body: response.body) if response
     end
 
+    def push_async(push)
+      @client.call_async(push.http2_request)
+    end
+
+    def prepare_push(notification)
+      request       = Apnotic::Request.new(notification)
+      http2_request = @client.prepare_request(:post, request.path,
+        body:    request.body,
+        headers: request.headers
+      )
+      Apnotic::Push.new(http2_request)
+    end
+
     def close
       @client.close
+    end
+
+    def join
+      @client.join
     end
 
     private

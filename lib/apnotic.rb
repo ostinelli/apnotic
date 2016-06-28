@@ -1,6 +1,7 @@
 require 'apnotic/connection'
 require 'apnotic/connection_pool'
 require 'apnotic/notification'
+require 'apnotic/push'
 require 'apnotic/request'
 require 'apnotic/response'
 require 'apnotic/version'

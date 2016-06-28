@@ -28,6 +28,10 @@ gem 'apnotic'
 ## Usage
 
 ### Standalone
+
+#### Sync pushes
+Sync pushes are blocking calls that will wait for an APNs response before proceeding.
+
 ```ruby
 require 'apnotic'
 
@@ -52,6 +56,42 @@ response.body     # => ""
 # close the connection
 connection.close
 ```
+
+#### Async pushes
+If you are sending out a considerable amount of push notifications, you may consider using async pushes to send out multiple requests in non-blocking calls. This allows to take full advantage of HTTP/2 streams.
+
+```ruby
+require 'apnotic'
+
+# create a persistent connection
+connection = Apnotic::Connection.new(cert_path: "apns_certificate.pem", cert_pass: "pass")
+
+# create a notification for a specific device token
+token = "6c267f26b173cd9595ae2f6702b1ab560371a60e7c8a9e27419bd0fa4a42e58f"
+
+notification       = Apnotic::Notification.new(token)
+notification.alert = "Notification from Apnotic!"
+
+# prepare push
+push = connection.prepare_push(notification)
+push.on(:response) do |response|
+  # read the response
+  response.ok?      # => true
+  response.status   # => '200'
+  response.headers  # => {":status"=>"200", "apns-id"=>"6f2cd350-bfad-4af0-a8bc-0d501e9e1799"}
+  response.body     # => ""
+end
+
+# send
+connection.push_async(push)
+
+# wait for all requests to be completed
+connection.join
+
+# close the connection
+connection.close
+```
+
 
 ### With Sidekiq / Rescue / ...
 A practical usage of a Sidekiq / Rescue worker probably has to:
@@ -93,6 +133,7 @@ end
 
 > The official [APNs Provider API documentation](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html) explains how to interpret the responses given by the APNS.
 
+You may also consider using async pushes instead in a Sidekiq / Rescue worker.
 
 
 ## Objects

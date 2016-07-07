@@ -23,11 +23,12 @@ describe Apnotic::Request do
 
   describe "#build_headers_for" do
     let(:notification) do
-      n            = Apnotic::Notification.new("phone-token")
-      n.apns_id    = "apns-id"
-      n.expiration = 1461491082
-      n.priority   = 10
-      n.topic      = "com.example.myapp"
+      n                  = Apnotic::Notification.new("phone-token")
+      n.apns_id          = "apns-id"
+      n.expiration       = 1461491082
+      n.priority         = 10
+      n.topic            = "com.example.myapp"
+      n.apns_collapse_id = "collapse-id"
       n
     end
 
@@ -39,10 +40,11 @@ describe Apnotic::Request do
 
     it { is_expected.to eq (
       {
-        "apns-id"         => "apns-id",
-        "apns-expiration" => 1461491082,
-        "apns-priority"   => 10,
-        "apns-topic"      => "com.example.myapp"
+        "apns-id"          => "apns-id",
+        "apns-expiration"  => 1461491082,
+        "apns-priority"    => 10,
+        "apns-topic"       => "com.example.myapp",
+        "apns-collapse-id" => "collapse-id"
       }
     ) }
   end

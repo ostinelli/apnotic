@@ -25,8 +25,8 @@ describe Apnotic::Request do
     let(:notification) do
       n                  = Apnotic::Notification.new("phone-token")
       n.apns_id          = "apns-id"
-      n.expiration       = 1461491082
-      n.priority         = 10
+      n.expiration       = "1461491082"
+      n.priority         = "10"
       n.topic            = "com.example.myapp"
       n.apns_collapse_id = "collapse-id"
       n
@@ -41,8 +41,8 @@ describe Apnotic::Request do
     it { is_expected.to eq (
       {
         "apns-id"          => "apns-id",
-        "apns-expiration"  => 1461491082,
-        "apns-priority"    => 10,
+        "apns-expiration"  => "1461491082",
+        "apns-priority"    => "10",
         "apns-topic"       => "com.example.myapp",
         "apns-collapse-id" => "collapse-id"
       }

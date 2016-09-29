@@ -94,11 +94,14 @@ connection.close
 
 
 ### With Sidekiq / Rescue / ...
+> In case that errors are encountered, Apnotic will repair the underlying connection but will not retry the requests that have failed. For this reason, it is recommended to use a queue engine that will retry unsuccessful pushes.
+
 A practical usage of a Sidekiq / Rescue worker probably has to:
 
  * Use a pool of persistent connections.
  * Send a push notification.
  * Remove a device with an invalid token.
+ * Raise errors when requests timeout, so that the queue engine can retry those.
 
 An example of a Sidekiq worker with such features follows. This presumes a Rails environment, and a model `Device`.
 
@@ -121,6 +124,7 @@ class MyWorker
       notification.alert = "Hello from Apnotic!"
 
       response = connection.push(notification)
+      raise "Timeout sending a push notification" unless response
 
       if response.status == '410' ||
         (response.status == '400' && response.body['reason'] == 'BadDeviceToken')

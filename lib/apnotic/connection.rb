@@ -19,10 +19,13 @@ module Apnotic
     def initialize(options={})
       @url             = options[:url] || APPLE_PRODUCTION_SERVER_URL
       @cert_path       = options[:cert_path]
+      @certificate     = options[:certificate]
       @cert_pass       = options[:cert_pass]
       @connect_timeout = options[:connect_timeout] || 30
 
-      raise "Cert file not found: #{@cert_path}" unless @cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))
+      if options[:certificate].nil?
+        raise "Cert file not found: #{@cert_path}" unless @cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))
+      end
 
       @client = NetHttp2::Client.new(@url, ssl_context: ssl_context, connect_timeout: @connect_timeout)
     end
@@ -58,6 +61,18 @@ module Apnotic
       @client.join
     end
 
+    def certificate
+      @certificate ||= begin
+        if @cert_path.respond_to?(:read)
+          cert = @cert_path.read
+          @cert_path.rewind if @cert_path.respond_to?(:rewind)
+        else
+          cert = File.read(@cert_path)
+        end
+        cert
+      end
+    end
+
     private
 
     def ssl_context
@@ -72,18 +87,6 @@ module Apnotic
           ctx.cert = OpenSSL::X509::Certificate.new(certificate)
         end
         ctx
-      end
-    end
-
-    def certificate
-      @certificate ||= begin
-        if @cert_path.respond_to?(:read)
-          cert = @cert_path.read
-          @cert_path.rewind if @cert_path.respond_to?(:rewind)
-        else
-          cert = File.read(@cert_path)
-        end
-        cert
       end
     end
   end

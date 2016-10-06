@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Apnotic::Connection do
   let(:url) { "https://localhost" }
   let(:cert_path) { apn_file_path }
+  let(:cert) { File.read apn_file_path }
   let(:connection) do
     Apnotic::Connection.new({
       url:       url,
@@ -29,6 +30,31 @@ describe Apnotic::Connection do
         let(:url) { "https://localhost:4343" }
 
         it { is_expected.to eq "https://localhost:4343" }
+      end
+    end
+
+
+    describe "option: certificate" do
+      let(:connection) do
+        Apnotic::Connection.new({
+          url:          url,
+          certificate:  cert,
+          cert_pass:    ""
+        })
+      end
+
+      subject { connection.certificate }
+
+      context "when it is a PEM string" do
+        it { is_expected.to eq File.read cert_path }
+      end
+
+      context "when it is a PEM string" do
+        it "is equivalent to loading in the certificate from a path" do
+          p12_connection = Apnotic::Connection.new(url: url, cert_path: apn_p12_file_path)
+          expect(connection.send(:ssl_context).key.to_pem).to eq p12_connection.send(:ssl_context).key.to_pem
+          expect(connection.send(:ssl_context).cert.to_pem).to eq p12_connection.send(:ssl_context).cert.to_pem
+        end
       end
     end
 

@@ -139,6 +139,45 @@ end
 
 You may also consider using async pushes instead in a Sidekiq / Rescue worker.
 
+#### With Sidekiq and Multiple Certificates
+In some situations you may need to deal with multiple certifications or store a certificate in your database.
+You can pass in the certificate directly as a PEM or DER when creating your connection pool.
+
+In the example below we setup a connection pool per topic and manage them in a hash.
+The certificate is stored in a database (encrypted) and then retrieved based on its topic.
+
+In this situation your worker will need a token AND a topic.
+
+```ruby
+  class MyWorker
+    include Sidekiq::Worker
+
+    def self.apnotic_pool(topic = "default")
+      @apnotic_pool ||= {}
+      @apnotic_pool[topic] ||= Apnotic::ConnectionPool.new(
+        { 
+          cert_pass: ENV["CERTIFICATE_PASSWORD"],
+          cert: ( Certificate.find_by_topic(topic).try(:to_pem) ||
+          File.read(Rails.root.join("config", "certs", "apns_certificate.pem"))
+        }, size: 5)
+    end
+
+    def perform(token, topic)
+      MyWorker.apnotic_pool(topic).with do |connection|
+        notification       = Apnotic::Notification.new(token)
+        notification.alert = "Hello from Apnotic!"
+
+        response = connection.push(notification)
+        raise "Timeout sending a push notification" unless response
+
+        if response.status == '410' ||
+          (response.status == '400' && response.body['reason'] == 'BadDeviceToken')
+          Device.find_by(token: token).destroy
+        end
+      end
+    end
+  end
+```
 
 ## Objects
 
@@ -151,7 +190,8 @@ Apnotic::Connection.new(options)
 
 | Option | Description
 |-----|-----
-| :cert_path | Required. The path to a valid APNS push certificate in .pem or .p12 format, or any object that responds to `:read`.
+| :cert_path | Requires `cert_path` or `certificate`. The path to a valid APNS push certificate in .pem or .p12 format, or any object that responds to `:read`.
+| :certificate |  Requires `cert_path` or `certificate`. A PEM or DER certificate. This option is useful if you are not storing your certificate on the filesystem. 
 | :cert_pass | Optional. The certificate's password.
 | :url | Optional. Defaults to https://api.push.apple.com:443.
 | :connect_timeout | Optional. Expressed in seconds, defaults to 30.

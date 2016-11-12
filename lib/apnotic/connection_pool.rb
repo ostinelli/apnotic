@@ -4,9 +4,17 @@ module Apnotic
 
   class ConnectionPool
 
-    def self.new(options={}, pool_options={})
-      ::ConnectionPool.new(pool_options) do
-        Apnotic::Connection.new(options)
+    class << self
+      def new(options={}, pool_options={})
+        ::ConnectionPool.new(pool_options) do
+          Apnotic::Connection.new(options)
+        end
+      end
+
+      def development(options={}, pool_options={})
+        ::ConnectionPool.new(pool_options) do
+          Apnotic::Connection.development(options)
+        end
       end
     end
   end

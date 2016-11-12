@@ -210,6 +210,12 @@ APNOTIC_POOL = Apnotic::ConnectionPool.new({
 }, size: 5)
 ```
 
+It is also possible to create a connection pool that points to the Apple Development servers by calling instead:
+
+```ruby
+Apnotic::ConnectionPool.development(connection_options, connection_pool_options)
+```
+
 ### `Apnotic::Notification`
 To create a notification for a specific device token:
 

@@ -94,7 +94,7 @@ connection.close
 
 
 ### With Sidekiq / Rescue / ...
-> In case that errors are encountered, Apnotic will repair the underlying connection but will not retry the requests that have failed. For this reason, it is recommended to use a queue engine that will retry unsuccessful pushes.
+> In case that errors are encountered, Apnotic will raise the error and repair the underlying connection, but it will not retry the requests that have failed. This is by design,  so that the job manager (Sidekiq, Resque,...) can retry the job that failed. For this reason, it is recommended to use a queue engine that will retry unsuccessful pushes.
 
 A practical usage of a Sidekiq / Rescue worker probably has to:
 

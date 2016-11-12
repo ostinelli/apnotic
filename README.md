@@ -151,10 +151,16 @@ Apnotic::Connection.new(options)
 
 | Option | Description
 |-----|-----
-| :cert_path | Required. The path to a valid APNS push certificate in .pem or .p12 format, or any object that responds to `:read`.
+| :cert_path | Required. The path to a valid APNS push certificate in `.pem` or `.p12` format, or any object that responds to `:read`.
 | :cert_pass | Optional. The certificate's password.
 | :url | Optional. Defaults to https://api.push.apple.com:443.
 | :connect_timeout | Optional. Expressed in seconds, defaults to 30.
+
+Note that since `:cert_path` can be any object that responds to `:read`, it is possible to pass in a certificate string directly by wrapping it up in a `StringIO` object:
+
+```ruby
+Apnotic::Connection.new(cert_path: StringIO.new("pem cert as string"))
+```
 
 It is also possible to create a connection that points to the Apple Development servers by calling instead:
 
@@ -172,7 +178,7 @@ Apnotic::Connection.development(options)
 
  * **cert_path** → **`string`**
 
- Returns the path to the certificate
+ Returns the path to the certificate.
 
 ##### Blocking calls
 
@@ -332,7 +338,7 @@ Before implementing a new feature, please submit a ticket to discuss what you in
 
 Do not commit to master in your fork. Provide a clean branch without merge commits. Every pull request should have its own topic branch. In this way, every additional adjustments to the original pull request might be done easily, and squashed with `git rebase -i`. The updated branch will be visible in the same pull request, so there will be no need to open new pull requests when there are changes to be applied.
 
-Ensure to include proper testing. To run tests you simply have to be in the project's root directory and run:
+Ensure that proper testing is included. To run tests you simply have to be in the project's root directory and run:
 
 ```bash
 $ rake

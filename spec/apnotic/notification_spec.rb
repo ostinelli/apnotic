@@ -136,4 +136,31 @@ describe Apnotic::Notification do
       ) }
     end
   end
+
+  describe "arbitray payload" do
+
+    subject { notification }
+    let(:mdm_payload) { { mdm: "A47EA72E-0A82-4B05-8ADE-5EEB3F103EB1" } }
+
+    describe "mdm payload" do
+
+      before do
+        notification.payload = mdm_payload
+      end
+
+
+      it { is_expected.to have_attributes(payload: mdm_payload) }
+    end
+
+    describe "mdm payload body" do
+
+      subject { notification.body }
+
+      before do
+        notification.payload = mdm_payload
+      end
+
+      it { is_expected.to eq (mdm_payload.to_json) }
+    end
+  end
 end

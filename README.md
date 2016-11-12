@@ -234,6 +234,7 @@ These are all Accessor attributes.
 
 | Method | Documentation
 |-----|-----
+| `payload` | Replaces ALL subsiquent values with the payload specified. This is useful if you wish to send an MDM payload.
 | `alert` | Refer to the official Apple documentation of [The Notification Payload](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html) for details.
 | `badge` | "
 | `sound` | "
@@ -269,6 +270,13 @@ notification.alert    = {
   action: "View"
 }
 notification.url_args = ["boarding", "A998"]
+```
+
+For an MDM push notification.
+
+```ruby
+notification            = Apnotic::Notification.new(token)
+notification.payload    = {mdm: "YOUR-MDM-PUSH-MAGIC-TOKEN"}
 ```
 
 ### `Apnotic::Response`

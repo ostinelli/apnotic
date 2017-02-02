@@ -48,4 +48,28 @@ describe Apnotic::Request do
       }
     ) }
   end
+
+  describe "#build_headers_for with options" do
+    let(:notification) do
+      n = Apnotic::Notification.new("phone-token")
+      n.apns_id = "apns-id"
+      n
+    end
+
+    let(:request) { Apnotic::Request.new(notification, token: "token") }
+
+    def build_headers
+      request.send(:build_headers_for, notification)
+    end
+
+    subject { build_headers }
+
+    it { is_expected.to eq (
+      {
+        "apns-id"          => "apns-id",
+        "authorization"    => "bearer token"
+      }
+    ) }
+  end
+
 end

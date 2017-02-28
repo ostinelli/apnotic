@@ -245,13 +245,13 @@ These are all Accessor attributes.
 
 | Method | Documentation
 |-----|-----
-| `alert` | Refer to the official Apple documentation of [The Notification Payload](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html) for details.
+| `alert` | Refer to the official Apple documentation of [The Payload Key Reference](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html) for details.
 | `badge` | "
 | `sound` | "
 | `content_available` | "
 | `category` | "
 | `custom_payload` | "
-| `apns_id` | Refer to the [APNs Provider API](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html) for details.
+| `apns_id` | Refer to [Communicating with APNs](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) for details.
 | `expiration` | "
 | `priority` | "
 | `topic` | "

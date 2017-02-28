@@ -59,8 +59,6 @@ module Apnotic
     end
 
     def on(event, &block)
-      raise ArgumentError, 'on event must provide a block' unless block_given?
-
       @client.on(event, &block)
     end
 

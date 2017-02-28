@@ -78,4 +78,17 @@ describe Apnotic::Connection do
       Apnotic::Connection.development(options)
     end
   end
+
+  describe "#on" do
+
+    it "attaches the event to the underlying client" do
+      exception = nil
+      connection.on(:error) { |exc| exception = exc }
+
+      error = StandardError.new("my test error")
+      connection.instance_variable_get(:@client).emit(:error, error)
+
+      expect(exception).to eq error
+    end
+  end
 end

@@ -135,7 +135,7 @@ class MyWorker
 end
 ```
 
-> The official [APNs Provider API documentation](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html) explains how to interpret the responses given by the APNS.
+> The official [APNs Provider API documentation](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html#//apple_ref/doc/uid/TP40008194-CH11-SW17) explains how to interpret the responses given by the APNS.
 
 You may also consider using async pushes instead in a Sidekiq / Rescue worker.
 

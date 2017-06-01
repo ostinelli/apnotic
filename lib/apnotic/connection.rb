@@ -28,6 +28,7 @@ module Apnotic
       raise "Cert file not found: #{@cert_path}" unless @cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))
 
       @client = NetHttp2::Client.new(@url, ssl_context: ssl_context, connect_timeout: @connect_timeout)
+      @client.on(:error) { |exception| puts "Exception has been raised in Apnotic: #{exception}" }
     end
 
     def push(notification, options={})

@@ -58,6 +58,10 @@ module Apnotic
       @client.join
     end
 
+    def on(event, &block)
+      @client.on(event, &block)
+    end
+
     private
 
     def ssl_context

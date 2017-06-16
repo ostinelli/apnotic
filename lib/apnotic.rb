@@ -1,3 +1,5 @@
+require 'apnotic/instance_cache'
+require 'apnotic/provider_token'
 require 'apnotic/connection'
 require 'apnotic/connection_pool'
 require 'apnotic/notification'

@@ -69,6 +69,18 @@ describe Apnotic::Notification do
       ) }
     end
 
+    context "when only a custom payload is specified do not add an empty aps" do
+      before do
+        notification.custom_payload = { mdm: "my-push-magic" }
+      end
+
+      it { is_expected.to eq (
+        {
+          mdm: "my-push-magic"
+        }.to_json
+      ) }
+    end
+
     context "when only alert is specified" do
 
       before do

@@ -4,7 +4,7 @@
 
 # Apnotic
 
-Apnotic is a gem for sending Apple Push Notifications using the [HTTP-2 specifics](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html#//apple_ref/doc/uid/TP40008194-CH100-SW9).
+Apnotic is a gem for sending Apple Push Notifications using the [HTTP-2 specifics](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html).
 
 
 ## Why "Yet Another APN" gem?

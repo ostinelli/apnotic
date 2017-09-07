@@ -6,7 +6,7 @@ module Apnotic
   class Notification
     attr_reader :token
     attr_accessor :alert, :badge, :sound, :content_available, :category, :custom_payload, :url_args, :mutable_content
-    attr_accessor :apns_id, :expiration, :priority, :topic, :apns_collapse_id
+    attr_accessor :apns_id, :expiration, :priority, :topic, :apns_collapse_id, :authorization
 
     def initialize(token)
       @token   = token
@@ -15,6 +15,10 @@ module Apnotic
 
     def body
       JSON.dump(to_hash).force_encoding(Encoding::BINARY)
+    end
+
+    def authorization_header
+      authorization ? "bearer #{authorization}" : nil
     end
 
     private

@@ -37,13 +37,15 @@ describe Apnotic::Notification do
         notification.priority           = 10
         notification.topic              = "com.example.myapp"
         notification.apns_collapse_id   = "collpase-id"
+        notification.authorization      = "token"
       end
 
       it { is_expected.to have_attributes(apns_id: "apns-id") }
       it { is_expected.to have_attributes(expiration: 1461491082) }
       it { is_expected.to have_attributes(priority: 10) }
       it { is_expected.to have_attributes(topic: "com.example.myapp") }
-      it { is_expected.to have_attributes(apns_collapse_id: "collpase-id") }
+      it { is_expected.to have_attributes(authorization: "token") }
+      it { is_expected.to have_attributes(authorization_header: "bearer token") }
     end
   end
 

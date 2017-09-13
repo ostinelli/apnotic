@@ -92,6 +92,25 @@ connection.join
 connection.close
 ```
 
+#### Token-based authentication
+Token-based authentication is supported. There are several advantages with token-based auth:
+
+- There is no need to renew push certificates annually.
+- A single key can be used for every app in your developer account.
+
+First, you will need a [token signing key](http://help.apple.com/xcode/mac/current/#/dev54d690a66?sub=dev1eb5dfe65) from your Apple developer account.
+
+Then configure your connection for `:token` authentication:
+
+```ruby
+require 'apnotic'
+connection = Apnotic::Connection.new(
+  auth_method: :token,
+  cert_path: "key.p8",
+  key_id: "p8_key_id",
+  team_id: "apple_team_id"
+)
+```
 
 ### With Sidekiq / Rescue / ...
 > In case that errors are encountered, Apnotic will raise the error and repair the underlying connection, but it will not retry the requests that have failed. This is by design,  so that the job manager (Sidekiq, Resque,...) can retry the job that failed. For this reason, it is recommended to use a queue engine that will retry unsuccessful pushes.
@@ -184,7 +203,7 @@ Allows to set a callback for the connection. The only available event is `:error
 connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
 ```
 
-> If the `:error` callback is not set, the underlying socket thread may raise an error in the main thread at unexpected execution times. 
+> If the `:error` callback is not set, the underlying socket thread may raise an error in the main thread at unexpected execution times.
 
  * **url** → **`URL`**
 
@@ -291,11 +310,11 @@ The response to a call to `connection.push`.
  * **body** → **`hash` or `string`**
 
  Returns the body of the response in Hash format if a valid JSON was returned, otherwise just the RAW body.
- 
+
   * **headers** → **`hash`**
 
  Returns a Hash containing the Headers of the response.
- 
+
  * **ok?** → **`boolean`**
 
  Returns if the push was successful.
@@ -311,9 +330,9 @@ The push object to be sent in an async call.
 #### Methods
 
  * **http2_request**  → **`NetHttp2::Request`**
- 
+
  Returns the HTTP/2 request of the push.
- 
+
  * **on(event, &block)**
 
  Allows to set a callback for the request. Available events are:

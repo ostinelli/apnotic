@@ -56,7 +56,7 @@ module Apnotic
       private
 
       def handle(socket)
-        conn = HTTP2::Server.new
+        conn = HTTP2::Server.new(settings_max_concurrent_streams: 1)
 
         conn.on(:frame) { |bytes| socket.write(bytes) }
 

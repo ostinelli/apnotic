@@ -20,6 +20,7 @@ module Apnotic
       @url             = options[:url] || APPLE_PRODUCTION_SERVER_URL
       @cert_path       = options[:cert_path]
       @cert_pass       = options[:cert_pass]
+      @certificate     = options[:cert]
       @connect_timeout = options[:connect_timeout] || 30
       @auth_method     = options[:auth_method] || :cert
       @team_id         = options[:team_id]

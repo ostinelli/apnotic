@@ -27,7 +27,7 @@ module Apnotic
       @key_id          = options[:key_id]
       @first_push      = true
 
-      raise "Cert file not found: #{@cert_path}" unless @cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))
+      raise "Cert file not found: #{@cert_path}" unless (@cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))) || @certificate
 
       @client = NetHttp2::Client.new(@url, ssl_context: ssl_context, connect_timeout: @connect_timeout)
     end

@@ -34,7 +34,8 @@ module Apnotic
       aps.merge!('url-args' => url_args) if url_args
       aps.merge!('mutable-content' => mutable_content) if mutable_content
 
-      n = { aps: aps }
+      n = { }
+      n.merge!(aps: aps) if aps.size > 0 || custom_payload.nil?
       n.merge!(custom_payload) if custom_payload
       n
     end

@@ -79,12 +79,10 @@ module Apnotic
     end
 
     def delayed_push_async(push)
-      if streams_available?
-        @client.call_async(push.http2_request)
-      else
+      until streams_available? do
         sleep 0.001
-        delayed_push_async(push)
       end
+      @client.call_async(push.http2_request)
     end
 
     def streams_available?

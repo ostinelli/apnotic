@@ -92,6 +92,37 @@ connection.join
 connection.close
 ```
 
+#### Mobile Device Management (MDM) notifications
+
+If you are building an iOS MDM solution, you can as well use apnotic to send mdm push notifications with the `Apnotic::MdmNotification` class. Sending a MDM notification requires a token and a push magic value, which is sent by the iOS device during its MDM enrollment:
+
+```ruby
+require 'apnotic'
+
+# create a persistent connection
+connection = Apnotic::Connection.new(cert_path: "apns_certificate.pem", cert_pass: "pass")
+
+# create a notification for a specific device token
+token = '6c267f26b173cd9595ae2f6702b1ab560371a60e7c8a9e27419bd0fa4a42e58f'
+
+# push magic value given by the iOS device during enrollment
+push_magic = '7F399691-C3D9-4795-ACF8-0B51D7073497'
+
+notification = Apnotic::MdmNotification.new(token: token, push_magic: push_magic)
+
+# send (this is a blocking call)
+response = connection.push(notification)
+
+# read the response
+response.ok?      # => true
+response.status   # => '200'
+response.headers  # => {":status"=>"200", "apns-id"=>"6f2cd350-bfad-4af0-a8bc-0d501e9e1799"}
+response.body     # => ""
+
+# close the connection
+connection.close
+```
+
 #### Token-based authentication
 Token-based authentication is supported. There are several advantages with token-based auth:
 

@@ -107,8 +107,8 @@ describe Apnotic::Notification do
             alert:             "Something for you!",
             badge:             22,
             sound:             "sound.wav",
-            other:             { id: 123 },
             category:          "action_one",
+            other:             { id: 123 },
             'content-available' => 1,
             'mutable-content'   => 1
           },

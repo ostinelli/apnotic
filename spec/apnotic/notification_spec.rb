@@ -14,6 +14,7 @@ describe Apnotic::Notification do
         notification.alert             = "Something for you!"
         notification.badge             = 22
         notification.sound             = "sound.wav"
+        notification.other             = { id: 123 }
         notification.content_available = false
         notification.category          = "action_one"
         notification.custom_payload    = { acme1: "bar" }
@@ -23,6 +24,7 @@ describe Apnotic::Notification do
       it { is_expected.to have_attributes(alert: "Something for you!") }
       it { is_expected.to have_attributes(badge: 22) }
       it { is_expected.to have_attributes(sound: "sound.wav") }
+      it { is_expected.to have_attributes(other: { id: 123 }) }
       it { is_expected.to have_attributes(content_available: false) }
       it { is_expected.to have_attributes(category: "action_one") }
       it { is_expected.to have_attributes(custom_payload: { acme1: "bar" }) }
@@ -92,6 +94,7 @@ describe Apnotic::Notification do
         notification.alert             = "Something for you!"
         notification.badge             = 22
         notification.sound             = "sound.wav"
+        notification.other             = { id: 123 }
         notification.content_available = 1
         notification.category          = "action_one"
         notification.custom_payload    = { acme1: "bar" }
@@ -104,6 +107,7 @@ describe Apnotic::Notification do
             alert:             "Something for you!",
             badge:             22,
             sound:             "sound.wav",
+            other:             { id: 123 },
             category:          "action_one",
             'content-available' => 1,
             'mutable-content'   => 1

@@ -6,8 +6,7 @@ describe Apnotic::Connection do
   let(:connection) do
     Apnotic::Connection.new({
       url:       url,
-      cert_path: cert_path,
-      cert_pass: ""
+      cert_path: cert_path
     })
   end
 

@@ -43,8 +43,8 @@ module Apnotic
 
     def push_async(push)
       if @first_push
-        @first_push = false
         @client.call_async(push.http2_request)
+        @first_push = false
       else
         delayed_push_async(push)
       end

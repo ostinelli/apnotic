@@ -301,6 +301,7 @@ These are all Accessor attributes.
 | `content_available` | "
 | `category` | "
 | `custom_payload` | "
+| `thread_id` | "
 | `apns_id` | Refer to [Communicating with APNs](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) for details.
 | `expiration` | "
 | `priority` | "

@@ -16,6 +16,7 @@ describe Apnotic::Notification do
         notification.sound             = "sound.wav"
         notification.content_available = false
         notification.category          = "action_one"
+        notification.thread_id         = 'action_id'
         notification.custom_payload    = { acme1: "bar" }
       end
 
@@ -25,6 +26,7 @@ describe Apnotic::Notification do
       it { is_expected.to have_attributes(sound: "sound.wav") }
       it { is_expected.to have_attributes(content_available: false) }
       it { is_expected.to have_attributes(category: "action_one") }
+      it { is_expected.to have_attributes(thread_id: "action_id") }
       it { is_expected.to have_attributes(custom_payload: { acme1: "bar" }) }
     end
 
@@ -94,6 +96,7 @@ describe Apnotic::Notification do
         notification.sound             = "sound.wav"
         notification.content_available = 1
         notification.category          = "action_one"
+        notification.thread_id         = 'action_id'
         notification.custom_payload    = { acme1: "bar" }
         notification.mutable_content   = 1
       end
@@ -106,7 +109,8 @@ describe Apnotic::Notification do
             sound:             "sound.wav",
             category:          "action_one",
             'content-available' => 1,
-            'mutable-content'   => 1
+            'mutable-content'   => 1,
+            'thread-id'         => 'action_id'
           },
           acme1: "bar"
         }.to_json

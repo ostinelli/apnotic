@@ -151,15 +151,16 @@ A practical usage of a Sidekiq / Rescue worker probably has to:
  * Use a pool of persistent connections.
  * Send a push notification.
  * Remove a device with an invalid token.
- * Raise errors when requests timeout, so that the queue engine can retry those (sync case)
- * Catch connection errors (async case)
+ * Raise errors when requests timeout, so that the queue engine can retry those.
+ * **Catch socket errors and retry push explicitly.**
+ * **Don't use async pushes within workers!**
 
-Sync and async examples of a Sidekiq worker with such features follows. This presumes a Rails environment, and a model `Device`.
+An example of a Sidekiq worker with such features follows. This presumes a Rails environment, and a model `Device`.
 
 ```ruby
 require 'apnotic'
 
-class SyncPushWorker
+class MyWorker
   include Sidekiq::Worker
 
   sidekiq_options queue: :push_notifications
@@ -181,48 +182,17 @@ class SyncPushWorker
         (response.status == '400' && response.body['reason'] == 'BadDeviceToken')
         Device.find_by(token: token).destroy
       end
-    end
-  end
-end
 
-class AsyncPushWorker
-  include Sidekiq::Worker
-
-  sidekiq_options queue: :push_notifications
-
-  APNOTIC_POOL = Apnotic::ConnectionPool.new({
-    cert_path: Rails.root.join("config", "certs", "apns_certificate.pem"),
-    cert_pass: "mypass"
-  }, size: 5)
-
-  def perform(tokens)
-    APNOTIC_POOL.with do |connection|
       connection.on(:error) do |exception|
-        raise "Exception has been raised: #{exception}"
+        Rails.logger.error("exception has been raised: #{exception}")
+        retry_without_exception(token)
       end
-
-      tokens.each do |token|
-        push = connection.prepare_push(build_notification(token))
-
-        push.on(:response) do |response|
-          if response.status == '410' ||
-            (response.status == '400' && response.body['reason'] == 'BadDeviceToken')
-            Device.find_by(token: token).destroy
-          end
-        end
-
-        connection.push_async(push)
-      end
-      connection.join
     end
-  end
 
-  private
+    private
 
-  def build_notification(token)
-    Apnotic::Notification.new(token).tap do |notification|
-      notification.topic = "your.awesome.app"
-      notification.alert = "Hello from Apnotic!"
+    def retry_without_exception(token)
+      self.class.perform_async(token)
     end
   end
 end

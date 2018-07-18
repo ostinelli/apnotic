@@ -14,15 +14,14 @@ describe Apnotic::ConnectionPool do
   end
 
   shared_examples_for "connection pool" do |connection_method|
-    subject { described_class.public_send(connection_method, options, pool_options) }
 
-    it "returns a connection pool" do
-      expect(subject).to be_kind_of(::ConnectionPool)
-      expect(subject.size).to eq(5)
-    end
+    context "without block" do
 
-    it "requires a block" do
-      expect { subject.with {} }.to raise_error(LocalJumpError)
+      subject { described_class.public_send(connection_method, options, pool_options) }
+
+      it "requires a block" do
+        expect { subject.with {} }.to raise_error(LocalJumpError, "a block is needed when initializing an Apnotic::ConnectionPool")
+      end
     end
 
     context "with block" do
@@ -32,6 +31,11 @@ describe Apnotic::ConnectionPool do
         described_class.public_send(connection_method, options, pool_options) do |connection|
           connection.on(:error) {}
         end
+      end
+
+      it "returns a connection pool" do
+        expect(subject).to be_kind_of(::ConnectionPool)
+        expect(subject.size).to eq(5)
       end
 
       it "passes the connection into a block" do

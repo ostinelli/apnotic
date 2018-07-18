@@ -166,7 +166,9 @@ class MyWorker
   APNOTIC_POOL = Apnotic::ConnectionPool.new({
     cert_path: Rails.root.join("config", "certs", "apns_certificate.pem"),
     cert_pass: "mypass"
-  }, size: 5)
+  }, size: 5) do |connection|
+    connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
+  end
 
   def perform(token)
     APNOTIC_POOL.with do |connection|
@@ -265,7 +267,9 @@ connection.on(:error) { |exception| puts "Exception has been raised: #{exception
 For your convenience, a wrapper around the [Connection Pool](https://github.com/mperham/connection_pool) gem is here for you. To create a new connection pool:
 
 ```ruby
-Apnotic::ConnectionPool.new(connection_options, connection_pool_options)
+Apnotic::ConnectionPool.new(connection_options, connection_pool_options) do |connection|
+  connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
+end
 ```
 
 For example:
@@ -273,13 +277,17 @@ For example:
 ```ruby
 APNOTIC_POOL = Apnotic::ConnectionPool.new({
   cert_path: "apns_certificate.pem"
-}, size: 5)
+}, size: 5) do |connection|
+  connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
+end
 ```
 
 It is also possible to create a connection pool that points to the Apple Development servers by calling instead:
 
 ```ruby
-Apnotic::ConnectionPool.development(connection_options, connection_pool_options)
+Apnotic::ConnectionPool.development(connection_options, connection_pool_options) do |connection|
+  connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
+end
 ```
 
 

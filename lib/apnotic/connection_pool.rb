@@ -7,13 +7,17 @@ module Apnotic
     class << self
       def new(options={}, pool_options={})
         ::ConnectionPool.new(pool_options) do
-          Apnotic::Connection.new(options)
+          connection = Apnotic::Connection.new(options)
+          yield(connection)
+          connection
         end
       end
 
       def development(options={}, pool_options={})
         ::ConnectionPool.new(pool_options) do
-          Apnotic::Connection.development(options)
+          connection = Apnotic::Connection.development(options)
+          yield(connection)
+          connection
         end
       end
     end

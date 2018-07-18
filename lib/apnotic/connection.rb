@@ -3,7 +3,7 @@ require 'openssl'
 
 module Apnotic
 
-  APPLE_DEVELOPMENT_SERVER_URL = "https://api.development.push.apple.com:443"
+  APPLE_DEVELOPMENT_SERVER_URL = "https://api.sandbox.push.apple.com:443"
   APPLE_PRODUCTION_SERVER_URL  = "https://api.push.apple.com:443"
 
   class Connection

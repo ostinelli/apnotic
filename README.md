@@ -152,6 +152,8 @@ A practical usage of a Sidekiq / Rescue worker probably has to:
  * Send a push notification.
  * Remove a device with an invalid token.
  * Raise errors when requests timeout, so that the queue engine can retry those.
+ * **Catch socket errors and retry push explicitly.**
+ * **Don't use async pushes within workers!**
 
 An example of a Sidekiq worker with such features follows. This presumes a Rails environment, and a model `Device`.
 
@@ -182,6 +184,17 @@ class MyWorker
         (response.status == '400' && response.body['reason'] == 'BadDeviceToken')
         Device.find_by(token: token).destroy
       end
+
+      connection.on(:error) do |exception|
+        Rails.logger.error("exception has been raised: #{exception}")
+        retry_without_exception(token)
+      end
+    end
+
+    private
+
+    def retry_without_exception(token)
+      self.class.perform_async(token)
     end
   end
 end

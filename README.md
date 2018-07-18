@@ -290,6 +290,7 @@ Apnotic::ConnectionPool.development(connection_options, connection_pool_options)
 end
 ```
 
+> Since `1.4.0.` you are required to pass in a block when defining an `Apnotic::ConnectionPool`. This is to enforce a proper implementation of the library. You can read more [here](https://github.com/ostinelli/apnotic/issues/69).
 
 ### `Apnotic::Notification`
 To create a notification for a specific device token:

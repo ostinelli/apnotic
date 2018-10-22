@@ -5,6 +5,7 @@ module Apnotic
 
   APPLE_DEVELOPMENT_SERVER_URL = "https://api.sandbox.push.apple.com:443"
   APPLE_PRODUCTION_SERVER_URL  = "https://api.push.apple.com:443"
+  PROXY_SETTINGS_KEYS = [:proxy_addr, :proxy_port, :proxy_user, :proxy_pass]
 
   class Connection
     attr_reader :url, :cert_path
@@ -28,7 +29,15 @@ module Apnotic
 
       raise "Cert file not found: #{@cert_path}" unless @cert_path && (@cert_path.respond_to?(:read) || File.exist?(@cert_path))
 
-      @client = NetHttp2::Client.new(@url, ssl_context: ssl_context, connect_timeout: @connect_timeout)
+      http2_options = {
+        ssl_context: ssl_context,
+        connect_timeout: @connect_timeout
+      }
+      PROXY_SETTINGS_KEYS.each do |key|
+        http2_options[key] = options[key] if options[key]
+      end
+
+      @client = NetHttp2::Client.new(@url, http2_options)
     end
 
     def push(notification, options={})

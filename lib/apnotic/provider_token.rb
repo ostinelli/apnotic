@@ -11,41 +11,33 @@ module Apnotic
     end
 
     def token
-      Array.new.tap do |array|
-        array.push encode_data(header)
-        array.push encode_data(payload)
-        array.push base64_urlsafe_encode(signature)
-      end.join(".")
+      [encode(header), encode(payload), encode(signature)].join(".")
     end
 
     private
 
-    def payload
-      {
-        iss: @team_id,
-        iat: Time.now.to_i
-      }
-    end
-
     def header
-      {
+      JSON.generate({
         alg: "ES256",
         kid: @key_id
-      }
+      })
+    end
+
+    def payload
+      JSON.generate({
+        iss: @team_id,
+        iat: Time.now.to_i
+      })
     end
 
     def signature
-      data = [encode_data(header), encode_data(payload)].join(".")
-      @key.dsa_sign_asn1(OpenSSL::Digest::SHA256.new().digest(data))
+      data = [encode(header), encode(payload)].join(".")
+      digest = OpenSSL::Digest::SHA256.new().digest(data)
+      @key.dsa_sign_asn1(digest)
     end
 
-    def encode_data(data)
-      base64_urlsafe_encode(JSON.generate(data))
-    end
-
-    def base64_urlsafe_encode(data)
+    def encode(data)
       Base64.encode64(data).tr('+/', '-_').gsub(/[\n=]/, '')
     end
-
   end
 end

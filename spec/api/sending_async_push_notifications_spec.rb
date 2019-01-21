@@ -38,6 +38,27 @@ describe "Sending Async Push Notifications" do
     expect(request.body).to eq({ aps: { alert: "test-notification" } }.to_json)
   end
 
+  it "sends many async notifications without exceeding stream limit" do
+    notification       = Apnotic::Notification.new(device_id)
+    notification.alert = "test-notification"
+
+    requests       = []
+    server.on_req = Proc.new { |req| requests.push(req) }
+
+    count = 100
+
+    expect do
+      count.times do
+        push = connection.prepare_push(notification)
+        connection.push_async(push)
+      end
+    end.to_not raise_error
+
+    connection.join
+
+    expect(requests.count).to eq count
+  end
+
   it "returns a response" do
     notification       = Apnotic::Notification.new(device_id)
     notification.alert = "test-notification"

@@ -2,6 +2,7 @@
 .*.sw[a-z]
 *.un~
 Session.vim
+.tags
 
 # mine
 .idea

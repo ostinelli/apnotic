@@ -4,7 +4,7 @@
 
 # Apnotic
 
-Apnotic is a gem for sending Apple Push Notifications using the [HTTP-2 specifics](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/ApplePushService.html#//apple_ref/doc/uid/TP40008194-CH100-SW9).
+Apnotic is a gem for sending Apple Push Notifications using the [HTTP-2 specifics](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html).
 
 
 ## Why "Yet Another APN" gem?
@@ -92,8 +92,58 @@ connection.join
 connection.close
 ```
 
+#### Mobile Device Management (MDM) notifications
 
-### With Sidekiq / Rescue / ...
+If you are building an iOS MDM solution, you can as well use apnotic to send mdm push notifications with the `Apnotic::MdmNotification` class. Sending a MDM notification requires a token and a push magic value, which is sent by the iOS device during its MDM enrollment:
+
+```ruby
+require 'apnotic'
+
+# create a persistent connection
+connection = Apnotic::Connection.new(cert_path: "apns_certificate.pem", cert_pass: "pass")
+
+# create a notification for a specific device token
+token = '6c267f26b173cd9595ae2f6702b1ab560371a60e7c8a9e27419bd0fa4a42e58f'
+
+# push magic value given by the iOS device during enrollment
+push_magic = '7F399691-C3D9-4795-ACF8-0B51D7073497'
+
+notification = Apnotic::MdmNotification.new(token: token, push_magic: push_magic)
+
+# send (this is a blocking call)
+response = connection.push(notification)
+
+# read the response
+response.ok?      # => true
+response.status   # => '200'
+response.headers  # => {":status"=>"200", "apns-id"=>"6f2cd350-bfad-4af0-a8bc-0d501e9e1799"}
+response.body     # => ""
+
+# close the connection
+connection.close
+```
+
+#### Token-based authentication
+Token-based authentication is supported. There are several advantages with token-based auth:
+
+- There is no need to renew push certificates annually.
+- A single key can be used for every app in your developer account.
+
+First, you will need a [token signing key](http://help.apple.com/xcode/mac/current/#/dev54d690a66?sub=dev1eb5dfe65) from your Apple developer account.
+
+Then configure your connection for `:token` authentication:
+
+```ruby
+require 'apnotic'
+connection = Apnotic::Connection.new(
+  auth_method: :token,
+  cert_path: "key.p8",
+  key_id: "p8_key_id",
+  team_id: "apple_team_id"
+)
+```
+
+### With Sidekiq / Resque / ...
 > In case that errors are encountered, Apnotic will raise the error and repair the underlying connection, but it will not retry the requests that have failed. This is by design,  so that the job manager (Sidekiq, Resque,...) can retry the job that failed. For this reason, it is recommended to use a queue engine that will retry unsuccessful pushes.
 
 A practical usage of a Sidekiq / Rescue worker probably has to:
@@ -116,7 +166,9 @@ class MyWorker
   APNOTIC_POOL = Apnotic::ConnectionPool.new({
     cert_path: Rails.root.join("config", "certs", "apns_certificate.pem"),
     cert_pass: "mypass"
-  }, size: 5)
+  }, size: 5) do |connection|
+    connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
+  end
 
   def perform(token)
     APNOTIC_POOL.with do |connection|
@@ -184,7 +236,7 @@ Allows to set a callback for the connection. The only available event is `:error
 connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
 ```
 
-> If the `:error` callback is not set, the underlying socket thread may raise an error in the main thread at unexpected execution times. 
+> If the `:error` callback is not set, the underlying socket thread may raise an error in the main thread at unexpected execution times.
 
  * **url** → **`URL`**
 
@@ -215,7 +267,9 @@ connection.on(:error) { |exception| puts "Exception has been raised: #{exception
 For your convenience, a wrapper around the [Connection Pool](https://github.com/mperham/connection_pool) gem is here for you. To create a new connection pool:
 
 ```ruby
-Apnotic::ConnectionPool.new(connection_options, connection_pool_options)
+Apnotic::ConnectionPool.new(connection_options, connection_pool_options) do |connection|
+  connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
+end
 ```
 
 For example:
@@ -223,15 +277,20 @@ For example:
 ```ruby
 APNOTIC_POOL = Apnotic::ConnectionPool.new({
   cert_path: "apns_certificate.pem"
-}, size: 5)
+}, size: 5) do |connection|
+  connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
+end
 ```
 
 It is also possible to create a connection pool that points to the Apple Development servers by calling instead:
 
 ```ruby
-Apnotic::ConnectionPool.development(connection_options, connection_pool_options)
+Apnotic::ConnectionPool.development(connection_options, connection_pool_options) do |connection|
+  connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
+end
 ```
 
+> Since `1.4.0.` you are required to pass in a block when defining an `Apnotic::ConnectionPool`. This is to enforce a proper implementation of the library. You can read more [here](https://github.com/ostinelli/apnotic/issues/69).
 
 ### `Apnotic::Notification`
 To create a notification for a specific device token:
@@ -251,6 +310,7 @@ These are all Accessor attributes.
 | `content_available` | "
 | `category` | "
 | `custom_payload` | "
+| `thread_id` | "
 | `apns_id` | Refer to [Communicating with APNs](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) for details.
 | `expiration` | "
 | `priority` | "
@@ -291,11 +351,11 @@ The response to a call to `connection.push`.
  * **body** → **`hash` or `string`**
 
  Returns the body of the response in Hash format if a valid JSON was returned, otherwise just the RAW body.
- 
+
   * **headers** → **`hash`**
 
  Returns a Hash containing the Headers of the response.
- 
+
  * **ok?** → **`boolean`**
 
  Returns if the push was successful.
@@ -311,9 +371,9 @@ The push object to be sent in an async call.
 #### Methods
 
  * **http2_request**  → **`NetHttp2::Request`**
- 
+
  Returns the HTTP/2 request of the push.
- 
+
  * **on(event, &block)**
 
  Allows to set a callback for the request. Available events are:

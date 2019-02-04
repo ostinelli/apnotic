@@ -1,38 +1,29 @@
-require 'securerandom'
-require 'json'
+require 'apnotic/abstract_notification'
 
 module Apnotic
 
-  class Notification
-    attr_reader :token
-    attr_accessor :alert, :badge, :sound, :content_available, :category, :custom_payload, :url_args, :mutable_content
-    attr_accessor :apns_id, :expiration, :priority, :topic, :apns_collapse_id
-
-    def initialize(token)
-      @token   = token
-      @apns_id = SecureRandom.uuid
-    end
-
-    def body
-      JSON.dump(to_hash).force_encoding(Encoding::BINARY)
-    end
+  class Notification < AbstractNotification
+    attr_accessor :alert, :badge, :sound, :content_available, :category, :custom_payload, :url_args, :mutable_content, :thread_id
 
     private
 
+    def aps
+      {}.tap do |result|
+        result.merge!(alert: alert) if alert
+        result.merge!(badge: badge) if badge
+        result.merge!(sound: sound) if sound
+        result.merge!(category: category) if category
+        result.merge!('content-available' => content_available) if content_available
+        result.merge!('url-args' => url_args) if url_args
+        result.merge!('mutable-content' => mutable_content) if mutable_content
+        result.merge!('thread-id' => thread_id) if thread_id
+      end
+    end
+
     def to_hash
-      aps = {}
-
-      aps.merge!(alert: alert) if alert
-      aps.merge!(badge: badge) if badge
-      aps.merge!(sound: sound) if sound
-      aps.merge!(category: category) if category
-      aps.merge!('content-available' => content_available) if content_available
-      aps.merge!('url-args' => url_args) if url_args
-      aps.merge!('mutable-content' => mutable_content) if mutable_content
-
-      n = { aps: aps }
-      n.merge!(custom_payload) if custom_payload
-      n
+      { aps: aps }.tap do |result|
+        result.merge!(custom_payload) if custom_payload
+      end
     end
   end
 end

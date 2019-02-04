@@ -6,8 +6,7 @@ describe Apnotic::Connection do
   let(:connection) do
     Apnotic::Connection.new({
       url:       url,
-      cert_path: cert_path,
-      cert_pass: ""
+      cert_path: cert_path
     })
   end
 
@@ -72,7 +71,7 @@ describe Apnotic::Connection do
 
     it "initializes a connection object with url set to APPLE DEVELOPMENT" do
       expect(Apnotic::Connection).to receive(:new).with(options.merge({
-        url: "https://api.development.push.apple.com:443"
+        url: "https://api.sandbox.push.apple.com:443"
       }))
 
       Apnotic::Connection.development(options)

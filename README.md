@@ -207,6 +207,10 @@ Apnotic::Connection.new(options)
 | :cert_pass | Optional. The certificate's password.
 | :url | Optional. Defaults to https://api.push.apple.com:443.
 | :connect_timeout | Optional. Expressed in seconds, defaults to 30.
+| :proxy_addr | Optional.  Proxy server. e.g. http://proxy.example.com
+| :proxy_port | Optional.  Proxy port. e.g. 8080
+| :proxy_user | Optional.  User name for proxy authentication. e.g. user_name
+| :proxy_pass | Optional.  Password for proxy authentication. e.g. pass_word
 
 Note that since `:cert_path` can be any object that responds to `:read`, it is possible to pass in a certificate string directly by wrapping it up in a `StringIO` object:
 

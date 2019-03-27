@@ -166,7 +166,7 @@ class MyWorker
   APNOTIC_POOL = Apnotic::ConnectionPool.new({
     cert_path: Rails.root.join("config", "certs", "apns_certificate.pem"),
     cert_pass: "mypass"
-  }, size: 5) do |connection|
+  }, size: ENV.fetch("RAILS_MAX_THREADS") { 5 }) do |connection|
     connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
   end
 

@@ -162,6 +162,14 @@ describe Apnotic::Notification do
       it { expect(subject).to eq true }
     end
 
+    context "when only content-available is set to 0" do
+      before do
+        notification.content_available = 0
+      end
+
+      it { expect(subject).to eq false }
+    end
+
     context "when content-available is set to 1 with others attributes" do
       before do
         notification.alert = "An alert"

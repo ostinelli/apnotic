@@ -142,4 +142,33 @@ describe Apnotic::Notification do
       ) }
     end
   end
+
+  describe "#background_notification?" do
+    subject { notification.background_notification? }
+
+    context "when content-available is not set" do
+      before do
+        notification.alert = "An alert"
+      end
+
+      it { expect(subject).to eq false }
+    end
+
+    context "when only content-available is set to 1" do
+      before do
+        notification.content_available = 1
+      end
+
+      it { expect(subject).to eq true }
+    end
+
+    context "when content-available is set to 1 with others attributes" do
+      before do
+        notification.alert = "An alert"
+        notification.content_available = 1
+      end
+
+      it { expect(subject).to eq false }
+    end
+  end
 end

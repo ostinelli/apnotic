@@ -26,6 +26,10 @@ module Apnotic
       authorization ? "bearer #{authorization}" : nil
     end
 
+    def background_notification?
+      false
+    end
+
     private
 
     def to_hash

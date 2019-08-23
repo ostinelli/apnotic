@@ -38,14 +38,34 @@ describe Apnotic::Request do
 
     subject { build_headers }
 
-    it { is_expected.to eq (
-      {
-        "apns-id"          => "apns-id",
-        "apns-expiration"  => "1461491082",
-        "apns-priority"    => "10",
-        "apns-topic"       => "com.example.myapp",
-        "apns-collapse-id" => "collapse-id"
-      }
-    ) }
+    context "when it's an alert notification" do
+      it { is_expected.to eq (
+        {
+          "apns-id"          => "apns-id",
+          "apns-expiration"  => "1461491082",
+          "apns-priority"    => "10",
+          "apns-push-type"   => "alert",
+          "apns-topic"       => "com.example.myapp",
+          "apns-collapse-id" => "collapse-id"
+        }
+      ) }
+    end
+
+    context "when it's a background notification" do
+      before do
+        notification.content_available = 1
+      end
+
+      it { is_expected.to eq (
+        {
+          "apns-id"          => "apns-id",
+          "apns-expiration"  => "1461491082",
+          "apns-priority"    => "10",
+          "apns-push-type"   => "background",
+          "apns-topic"       => "com.example.myapp",
+          "apns-collapse-id" => "collapse-id"
+        }
+      ) }
+    end
   end
 end

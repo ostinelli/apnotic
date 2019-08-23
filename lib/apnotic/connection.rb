@@ -101,7 +101,7 @@ module Apnotic
     def remote_max_concurrent_streams
       # 0x7fffffff is the default value from http-2 gem (2^31)
       if @client.remote_settings[:settings_max_concurrent_streams] == 0x7fffffff
-        0
+        1
       else
         @client.remote_settings[:settings_max_concurrent_streams]
       end

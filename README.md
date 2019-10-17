@@ -322,6 +322,7 @@ These are all Accessor attributes.
 | `url_args` | Values for [Safari push notifications](https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NotificationProgrammingGuideForWebsites/PushNotifications/PushNotifications.html#//apple_ref/doc/uid/TP40013225-CH3-SW12).
 | `mutable_content` | Key for [UNNotificationServiceExtension](https://developer.apple.com/reference/usernotifications/unnotificationserviceextension).
 | `apns_collapse_id` | Key for setting the identification of a notification and allowing for the updating of the content of that notification in a subsequent push. More information avaible in [WWDC 2016 - Session 707 Introduction to Notifications](https://developer.apple.com/videos/play/wwdc2016/707/?time=1134). iOS 10+
+| `type` | Set payload type [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns)
 
 For example:
 

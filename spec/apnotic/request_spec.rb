@@ -67,5 +67,24 @@ describe Apnotic::Request do
         }
       ) }
     end
+
+    context "when it's a voip notification" do
+      before do
+        notification.content_available = 1
+        notification.type = 'voip'
+      end
+
+      it { is_expected.to eq (
+                                 {
+                                     "apns-id"          => "apns-id",
+                                     "apns-expiration"  => "1461491082",
+                                     "apns-priority"    => "10",
+                                     "apns-push-type"   => "voip",
+                                     "apns-topic"       => "com.example.myapp",
+                                     "apns-collapse-id" => "collapse-id"
+                                 }
+                             ) }
+    end
+
   end
 end

@@ -18,8 +18,10 @@ module Apnotic
       h.merge!('apns-priority' => notification.priority) if notification.priority
       if notification.voip
         h.merge!('apns-push-type' => notification.voip)
+      elsif notification.background_notification?
+        h.merge!('apns-push-type' => 'background')
       else
-        h.merge!('apns-push-type' => notification.background_notification? ? 'background' : 'alert' )
+        h.merge!('apns-push-type' => 'alert')
       end
       h.merge!('apns-topic' => notification.topic) if notification.topic
       h.merge!('apns-collapse-id' => notification.apns_collapse_id) if notification.apns_collapse_id

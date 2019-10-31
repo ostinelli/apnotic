@@ -71,7 +71,7 @@ describe Apnotic::Request do
     context "when it's a voip notification" do
       before do
         notification.content_available = 1
-        notification.voip = 'voip'
+        notification.voip = true
       end
 
       it { is_expected.to eq (

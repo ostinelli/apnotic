@@ -16,8 +16,8 @@ module Apnotic
       h.merge!('apns-id' => notification.apns_id) if notification.apns_id
       h.merge!('apns-expiration' => notification.expiration) if notification.expiration
       h.merge!('apns-priority' => notification.priority) if notification.priority
-      if notification.type
-        h.merge!('apns-push-type' => notification.type)
+      if notification.voip
+        h.merge!('apns-push-type' => notification.voip)
       else
         h.merge!('apns-push-type' => notification.background_notification? ? 'background' : 'alert' )
       end

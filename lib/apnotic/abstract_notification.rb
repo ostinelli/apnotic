@@ -12,6 +12,7 @@ module Apnotic
                   :topic,
                   :apns_collapse_id,
                   :authorization
+                  :rpr_attachment
 
     def initialize(token)
       @token   = token

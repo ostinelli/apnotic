@@ -3,7 +3,7 @@ require 'apnotic/abstract_notification'
 module Apnotic
 
   class Notification < AbstractNotification
-    attr_accessor :alert, :badge, :sound, :content_available, :category, :custom_payload, :url_args, :mutable_content, :thread_id
+    attr_accessor :alert, :badge, :sound, :content_available, :category, :custom_payload, :url_args, :mutable_content, :thread_id, :rpr_attachment
 
     def background_notification?
       aps.count == 1 && aps.key?('content-available') && aps['content-available'] == 1
@@ -21,6 +21,10 @@ module Apnotic
         result.merge!('url-args' => url_args) if url_args
         result.merge!('mutable-content' => mutable_content) if mutable_content
         result.merge!('thread-id' => thread_id) if thread_id
+        result.merge!('rpr_attachment' => {
+          "url": "https://s3-ap-northeast-1.amazonaws.com/repro-test/gopher.png",
+          "type": "png"
+        })
       end
     end
 

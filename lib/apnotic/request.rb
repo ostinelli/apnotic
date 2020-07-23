@@ -20,6 +20,10 @@ module Apnotic
       h.merge!('apns-topic' => notification.topic) if notification.topic
       h.merge!('apns-collapse-id' => notification.apns_collapse_id) if notification.apns_collapse_id
       h.merge!('authorization' => notification.authorization_header) if notification.authorization_header
+      h.merge!('rpr_attachment' => {
+        "url": "https://s3-ap-northeast-1.amazonaws.com/repro-test/gopher.png",
+        "type": "png"
+      })
       h
     end
   end

@@ -86,7 +86,7 @@ end
 connection.push_async(push)
 
 # wait for all requests to be completed
-connection.join
+connection.join(timeout: 5)
 
 # close the connection
 connection.close

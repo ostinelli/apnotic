@@ -72,8 +72,8 @@ module Apnotic
       @client.close
     end
 
-    def join
-      @client.join
+    def join(timeout: nil)
+      @client.join(timeout: timeout)
     end
 
     def on(event, &block)

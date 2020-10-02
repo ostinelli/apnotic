@@ -172,11 +172,11 @@ describe Apnotic::Notification do
 
     context "when content-available is set to 1 with others attributes" do
       before do
-        notification.alert = "An alert"
+        notification.custom_payload = { acme1: "bar" }
         notification.content_available = 1
       end
 
-      it { expect(subject).to eq false }
+      it { expect(subject).to eq true }
     end
   end
 end

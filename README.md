@@ -123,6 +123,38 @@ response.body     # => ""
 connection.close
 ```
 
+#### Voice Over IP (voip) notifications
+
+If you are building an iOS VoIP App, you can deliver Pushkit voip notifications by overriding `custom_headers` attribute for `apns-push-type`
+
+```ruby
+require 'apnotic'
+
+# create a persistent connection
+connection = Apnotic::Connection.new(cert_path: 'apns_certificate.pem',
+                                     cert_pass: 'pass')
+
+# create a notification for a specific device token
+token = '6c267f26b173cd9595ae2f6702b1ab560371a60e7c8a9e27419bd0fa4a42e58f'
+
+notification       = Apnotic::Notification.new(token)
+notification.custom_headers = {
+  'apns-push-type' => 'voip'
+}
+
+# send (this is a blocking call)
+response = connection.push(notification)
+
+# read the response
+response.ok?      # => true
+response.status   # => '200'
+response.headers  # => {":status"=>"200", "apns-id"=>"6f2cd350-bfad-4af0-a8bc-0d501e9e1799"}
+response.body     # => ""
+
+# close the connection
+connection.close
+```
+
 #### Token-based authentication
 Token-based authentication is supported. There are several advantages with token-based auth:
 

@@ -20,6 +20,7 @@ module Apnotic
       h.merge!('apns-topic' => notification.topic) if notification.topic
       h.merge!('apns-collapse-id' => notification.apns_collapse_id) if notification.apns_collapse_id
       h.merge!('authorization' => notification.authorization_header) if notification.authorization_header
+      h.merge! notification.custom_headers if notification.custom_headers
       h
     end
   end

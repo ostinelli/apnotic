@@ -7,17 +7,20 @@ describe Apnotic::Notification do
 
     subject { notification }
 
-    # <https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/TheNotificationPayload.html>
+    # <https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363>
     describe "remote notification payload" do
 
       before do
-        notification.alert             = "Something for you!"
-        notification.badge             = 22
-        notification.sound             = "sound.wav"
-        notification.content_available = false
-        notification.category          = "action_one"
-        notification.thread_id         = 'action_id'
-        notification.custom_payload    = { acme1: "bar" }
+        notification.alert              = "Something for you!"
+        notification.badge              = 22
+        notification.sound              = "sound.wav"
+        notification.content_available  = false
+        notification.category           = "action_one"
+        notification.thread_id          = "action_id"
+        notification.target_content_id  = "target_content_id"
+        notification.interruption_level = "passive"
+        notification.relevance_score    = 0.8
+        notification.custom_payload     = { acme1: "bar" }
       end
 
       it { is_expected.to have_attributes(token: "token") }
@@ -27,6 +30,9 @@ describe Apnotic::Notification do
       it { is_expected.to have_attributes(content_available: false) }
       it { is_expected.to have_attributes(category: "action_one") }
       it { is_expected.to have_attributes(thread_id: "action_id") }
+      it { is_expected.to have_attributes(target_content_id: "target_content_id") }
+      it { is_expected.to have_attributes(interruption_level: "passive") }
+      it { is_expected.to have_attributes(relevance_score: 0.8) }
       it { is_expected.to have_attributes(custom_payload: { acme1: "bar" }) }
     end
 
@@ -91,14 +97,17 @@ describe Apnotic::Notification do
     context "when everything is specified" do
 
       before do
-        notification.alert             = "Something for you!"
-        notification.badge             = 22
-        notification.sound             = "sound.wav"
-        notification.content_available = 1
-        notification.category          = "action_one"
-        notification.thread_id         = 'action_id'
-        notification.custom_payload    = { acme1: "bar" }
-        notification.mutable_content   = 1
+        notification.alert              = "Something for you!"
+        notification.badge              = 22
+        notification.sound              = "sound.wav"
+        notification.content_available  = 1
+        notification.category           = "action_one"
+        notification.thread_id          = 'action_id'
+        notification.target_content_id  = "target_content_id"
+        notification.interruption_level = "passive"
+        notification.relevance_score    = 0.8
+        notification.custom_payload     = { acme1: "bar" }
+        notification.mutable_content    = 1
       end
 
       it { is_expected.to eq (
@@ -108,9 +117,12 @@ describe Apnotic::Notification do
             badge:             22,
             sound:             "sound.wav",
             category:          "action_one",
-            'content-available' => 1,
-            'mutable-content'   => 1,
-            'thread-id'         => 'action_id'
+            'content-available'  => 1,
+            'mutable-content'    => 1,
+            'thread-id'          => 'action_id',
+            'target-content-id'  => 'target_content_id',
+            'interruption-level' => 'passive',
+            'relevance-score'    => 0.8
           },
           acme1: "bar"
         }.to_json

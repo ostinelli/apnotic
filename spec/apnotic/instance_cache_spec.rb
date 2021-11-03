@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Apnotic::InstanceCache do
   let(:seconds) { 60 }
+  let(:now) { Process.clock_gettime(Process::CLOCK_MONOTONIC) }
   let(:instance_cache) do
     Apnotic::InstanceCache.new(Time, :now, seconds)
   end
@@ -11,15 +12,15 @@ describe Apnotic::InstanceCache do
 
     it "has the same token in the same period" do
       original = subject.call
-      valid_time = Time.now + seconds - 1
-      allow(Time).to receive(:now).and_return(valid_time)
+      valid_time = now + seconds - 1
+      allow(Process).to receive(:clock_gettime).and_return(valid_time)
       expect(original).to eq subject.call
     end
 
     it "should change after ttl expires" do
       original = subject.call
-      expired_time = Time.now + seconds
-      allow(Time).to receive(:now).and_return(expired_time)
+      expired_time = now + seconds
+      allow(Process).to receive(:clock_gettime).and_return(expired_time)
       expect(original).not_to eq subject.call
     end
   end

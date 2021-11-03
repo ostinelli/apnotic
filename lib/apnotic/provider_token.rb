@@ -26,7 +26,7 @@ module Apnotic
     def payload
       JSON.generate({
         iss: @team_id,
-        iat: Time.now.to_i
+        iat: Time.now.utc.to_i
       })
     end
 

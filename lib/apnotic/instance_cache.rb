@@ -17,12 +17,16 @@ module Apnotic
     private
 
     def expired?
-      Time.now - @cached_at >= @ttl
+      now - @cached_at >= @ttl
     end
 
     def new_value
-      @cached_at = Time.now
+      @cached_at = now
       @cached_value = @instance.send(@method)
+    end
+
+    def now
+      Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
   end
 end

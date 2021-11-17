@@ -94,12 +94,18 @@ describe Apnotic::Connection do
   describe ".development" do
     let(:options) { { url: "will-be-overwritten", other: "options" } }
 
+    subject { Apnotic::Connection.development(cert_path: cert_path) }
+
     it "initializes a connection object with url set to APPLE DEVELOPMENT" do
       expect(Apnotic::Connection).to receive(:new).with(options.merge({
         url: "https://api.sandbox.push.apple.com:443"
       }))
 
       Apnotic::Connection.development(options)
+    end
+
+    it "responds to development?" do
+      expect(subject.send(:development?)).to eq true
     end
   end
 

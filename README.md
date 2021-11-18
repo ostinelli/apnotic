@@ -201,16 +201,19 @@ To create a new persistent connection:
 Apnotic::Connection.new(options)
 ```
 
-| Option | Description
-|-----|-----
-| :cert_path | Required. The path to a valid APNS push certificate in `.pem` or `.p12` format, or any object that responds to `:read`.
-| :cert_pass | Optional. The certificate's password.
-| :url | Optional. Defaults to https://api.push.apple.com:443.
-| :connect_timeout | Optional. Expressed in seconds, defaults to 30.
-| :proxy_addr | Optional.  Proxy server. e.g. http://proxy.example.com
-| :proxy_port | Optional.  Proxy port. e.g. 8080
-| :proxy_user | Optional.  User name for proxy authentication. e.g. user_name
-| :proxy_pass | Optional.  Password for proxy authentication. e.g. pass_word
+| Option           | Description
+|------------------|------------
+| :cert_path       | `Required` The path to a valid APNS push certificate or any object that responds to `:read`. Supported formats: `.pem`, `.p12` (`:cert` auth), or `.p8` (`:token` auth).
+| :cert_pass       | `Optional` The certificate's password.
+| :auth_method     | `Optional` The options are `:cert` or `:token`. Defaults to `:cert`.
+| :team_id         | `Required for :token auth` Team ID from [Membership Details](https://developer.apple.com/account/#!/membership/).
+| :key_id          | `Required for :token auth` ID from [Certificates, Identifiers & Profiles](https://developer.apple.com/account/resources/authkeys).
+| :url             | `Optional` Defaults to https://api.push.apple.com:443.
+| :connect_timeout | `Optional` Expressed in seconds, defaults to 30.
+| :proxy_addr      | `Optional` Proxy server. e.g. http://proxy.example.com
+| :proxy_port      | `Optional` Proxy port. e.g. 8080
+| :proxy_user      | `Optional` User name for proxy authentication. e.g. user_name
+| :proxy_pass      | `Optional` Password for proxy authentication. e.g. pass_word
 
 Note that since `:cert_path` can be any object that responds to `:read`, it is possible to pass in a certificate string directly by wrapping it up in a `StringIO` object:
 

@@ -228,43 +228,43 @@ Apnotic::Connection.development(options)
 
 #### Methods
 
- * **cert_path** → **`string`**
+- **cert_path** → **`string`**
 
- Returns the path to the certificate.
+    Returns the path to the certificate.
 
- * **on(event, &block)**
+- **on(event, &block)**
 
-Allows to set a callback for the connection. The only available event is `:error`, which allows to set a callback when an error is raised at socket level, hence in the underlying socket thread.
+    Allows to set a callback for the connection. The only available event is `:error`, which allows to set a callback when an error is raised at socket level, hence in the underlying socket thread.
 
-```ruby
-connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
-```
+    ```ruby
+    connection.on(:error) { |exception| puts "Exception has been raised: #{exception}" }
+    ```
 
-> If the `:error` callback is not set, the underlying socket thread may raise an error in the main thread at unexpected execution times.
+    > If the `:error` callback is not set, the underlying socket thread may raise an error in the main thread at unexpected execution times.
 
- * **url** → **`URL`**
+- **url** → **`URL`**
 
- Returns the URL of the APNS endpoint.
+    Returns the URL of the APNS endpoint.
 
 ##### Blocking calls
 
- * **push(notification, timeout: 30)** → **`Apnotic::Response` or `nil`**
+- **push(notification, timeout: 30)** → **`Apnotic::Response` or `nil`**
 
- Sends a notification. Returns `nil` in case a timeout occurs.
+    Sends a notification. Returns `nil` in case a timeout occurs.
 
 ##### Non-blocking calls
 
- * **prepare_push(notification)** → **`Apnotic::Push`**
+- **prepare_push(notification)** → **`Apnotic::Push`**
 
- Prepares an async push.
+    Prepares an async push.
 
- ```ruby
- push = client.prepare_push(notification)
- ```
+    ```ruby
+    push = client.prepare_push(notification)
+    ```
 
- * **push_async(push)**
+- **push_async(push)**
 
-  Sends the push asynchronously.
+    Sends the push asynchronously.
 
 
 ### `Apnotic::ConnectionPool`
@@ -355,21 +355,21 @@ The response to a call to `connection.push`.
 
 #### Methods
 
- * **body** → **`hash` or `string`**
+-  **body** → **`hash` or `string`**
 
- Returns the body of the response in Hash format if a valid JSON was returned, otherwise just the RAW body.
+    Returns the body of the response in Hash format if a valid JSON was returned, otherwise just the RAW body.
 
-  * **headers** → **`hash`**
+- **headers** → **`hash`**
 
- Returns a Hash containing the Headers of the response.
+    Returns a Hash containing the Headers of the response.
 
- * **ok?** → **`boolean`**
+- **ok?** → **`boolean`**
 
- Returns if the push was successful.
+    Returns if the push was successful.
 
- * **status** → **`string`**
+- **status** → **`string`**
 
-Returns the status code.
+    Returns the status code.
 
 
 ### `Apnotic::Push`
@@ -377,21 +377,21 @@ The push object to be sent in an async call.
 
 #### Methods
 
- * **http2_request**  → **`NetHttp2::Request`**
+- **http2_request**  → **`NetHttp2::Request`**
 
- Returns the HTTP/2 request of the push.
+    Returns the HTTP/2 request of the push.
 
- * **on(event, &block)**
+- **on(event, &block)**
 
- Allows to set a callback for the request. Available events are:
+    Allows to set a callback for the request. Available events are:
 
-  * `:response`: triggered when a response is fully received (called once).
+    `:response`: triggered when a response is fully received (called once).
 
- Even if Apnotic is thread-safe, the async callbacks will be executed in a different thread, so ensure that your code in the callbacks is thread-safe.
+    Even if Apnotic is thread-safe, the async callbacks will be executed in a different thread, so ensure that your code in the callbacks is thread-safe.
 
- ```ruby
- push.on(:response) { |response| p response.headers }
- ```
+    ```ruby
+    push.on(:response) { |response| p response.headers }
+    ```
 
 ## Getting Your APNs Certificate
 

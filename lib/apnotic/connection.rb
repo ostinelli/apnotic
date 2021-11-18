@@ -114,6 +114,7 @@ module Apnotic
     def build_ssl_context
       @build_ssl_context ||= begin
         ctx = OpenSSL::SSL::SSLContext.new
+        ctx.security_level = 1 if development? && ctx.respond_to?(:security_level)
         begin
           p12      = OpenSSL::PKCS12.new(certificate, @cert_pass)
           ctx.key  = p12.key
@@ -146,5 +147,8 @@ module Apnotic
       @provider_token_cache.call
     end
 
+    def development?
+      url == APPLE_DEVELOPMENT_SERVER_URL
+    end
   end
 end

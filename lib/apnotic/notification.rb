@@ -4,7 +4,7 @@ module Apnotic
 
   class Notification < AbstractNotification
     attr_accessor :alert, :badge, :sound, :content_available, :category, :custom_payload, :url_args, :mutable_content, :thread_id
-    attr_accessor :target_content_id, :interruption_level, :relevance_score
+    attr_accessor :target_content_id, :interruption_level, :relevance_score, :custom_headers
     
     def background_notification?
       aps.count == 1 && aps.key?('content-available') && aps['content-available'] == 1

@@ -22,6 +22,5 @@ module Apnotic
       h.merge!('authorization' => notification.authorization_header) if notification.authorization_header
       h
     end
-
   end
 end

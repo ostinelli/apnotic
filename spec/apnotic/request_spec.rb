@@ -53,6 +53,7 @@ describe Apnotic::Request do
     let(:notification) do
       n = Apnotic::Notification.new("phone-token")
       n.apns_id = "apns-id"
+      n.authorization = "token"
       n
     end
 
@@ -71,5 +72,4 @@ describe Apnotic::Request do
       }
     ) }
   end
-
 end

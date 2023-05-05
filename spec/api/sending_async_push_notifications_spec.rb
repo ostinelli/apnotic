@@ -5,7 +5,7 @@ describe "Sending Async Push Notifications" do
   let(:server) { Apnotic::Dummy::Server.new(port: port) }
   let(:connection) do
     Apnotic::Connection.new(
-      url:       "https://127.0.0.1:#{port}",
+      url:       "https://localhost:#{port}",
       cert_path: apn_file_path
     )
   end
@@ -33,7 +33,7 @@ describe "Sending Async Push Notifications" do
     expect(request.headers[":scheme"]).to eq "https"
     expect(request.headers[":method"]).to eq "POST"
     expect(request.headers[":path"]).to eq "/3/device/#{device_id}"
-    expect(request.headers[":authority"]).to eq "127.0.0.1:9516"
+    expect(request.headers[":authority"]).to eq "localhost:9516"
     expect(request.headers["apns-id"]).to eq notification.apns_id
     expect(request.body).to eq({ aps: { alert: "test-notification" } }.to_json)
   end

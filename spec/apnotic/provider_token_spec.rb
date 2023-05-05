@@ -8,15 +8,14 @@ describe Apnotic::ProviderToken do
 
   let(:team_id) { "team_id" }
   let(:key_id) { "key_id" }
+  let(:key) do
+    OpenSSL::PKey::EC.generate('prime256v1')
+  end
   let(:private_key) do
-    OpenSSL::PKey::EC.new('prime256v1').tap do |key|
-      key.generate_key
-    end
+    key.to_pem
   end
   let(:public_key) do
-    OpenSSL::PKey::EC.new(private_key).tap do |key|
-      key.private_key = nil
-    end
+    OpenSSL::PKey::EC.new(key)
   end
   let(:provider_token) do
     Apnotic::ProviderToken.new(private_key, team_id, key_id)

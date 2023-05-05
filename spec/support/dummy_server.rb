@@ -92,7 +92,7 @@ module Apnotic
       end
 
       def new_server
-        s = TCPServer.new(@port)
+        s = TCPServer.new('::', @port)
         OpenSSL::SSL::SSLServer.new(s, ssl_context)
       end
 

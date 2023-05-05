@@ -67,5 +67,22 @@ describe Apnotic::Request do
         }
       ) }
     end
+
+    context "when it's a live activity notification" do
+      before do
+        notification.push_type = 'liveactivity'
+      end
+
+      it { is_expected.to eq (
+        {
+          "apns-id"          => "apns-id",
+          "apns-expiration"  => "1461491082",
+          "apns-priority"    => "10",
+          "apns-push-type"   => "liveactivity",
+          "apns-topic"       => "com.example.myapp",
+          "apns-collapse-id" => "collapse-id"
+        }
+      ) }
+    end
   end
 end

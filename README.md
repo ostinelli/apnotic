@@ -321,10 +321,15 @@ These are all Accessor attributes.
 | `target_content_id` | "
 | `interruption_level` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 15+
 | `relevance_score` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 15+
+| `stale_date` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 16+
+| `content_state` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 16+
+| `timestamp` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 16+
+| `event` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 16+
 | `apns_id` | Refer to [Communicating with APNs](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) for details.
 | `expiration` | "
 | `priority` | "
 | `topic` | "
+| `push_type` | Refer to [Sending Notification Requests to APNs](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns) for details, defaults to alert or background (when content-availabe key is set to 1)
 | `url_args` | Values for [Safari push notifications](https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NotificationProgrammingGuideForWebsites/PushNotifications/PushNotifications.html#//apple_ref/doc/uid/TP40013225-CH3-SW12).
 | `mutable_content` | Key for [UNNotificationServiceExtension](https://developer.apple.com/reference/usernotifications/unnotificationserviceextension).
 | `apns_collapse_id` | Key for setting the identification of a notification and allowing for the updating of the content of that notification in a subsequent push. More information avaible in [WWDC 2016 - Session 707 Introduction to Notifications](https://developer.apple.com/videos/play/wwdc2016/707/?time=1134). iOS 10+

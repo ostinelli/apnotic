@@ -21,6 +21,10 @@ describe Apnotic::Notification do
         notification.interruption_level = "passive"
         notification.relevance_score    = 0.8
         notification.custom_payload     = { acme1: "bar" }
+        notification.stale_date         = 1650998941
+        notification.content_state      = { content: "content" }
+        notification.timestamp          = 1168364460
+        notification.event              = "update"
       end
 
       it { is_expected.to have_attributes(token: "token") }
@@ -34,6 +38,10 @@ describe Apnotic::Notification do
       it { is_expected.to have_attributes(interruption_level: "passive") }
       it { is_expected.to have_attributes(relevance_score: 0.8) }
       it { is_expected.to have_attributes(custom_payload: { acme1: "bar" }) }
+      it { is_expected.to have_attributes(stale_date: 1650998941) }
+      it { is_expected.to have_attributes(content_state: { content: "content" }) }
+      it { is_expected.to have_attributes(timestamp: 1168364460) }
+      it { is_expected.to have_attributes(event: "update") }
     end
 
     # <https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/APNsProviderAPI.html>
@@ -46,6 +54,7 @@ describe Apnotic::Notification do
         notification.topic              = "com.example.myapp"
         notification.apns_collapse_id   = "collpase-id"
         notification.authorization      = "token"
+        notification.push_type          = "liveactivity"
       end
 
       it { is_expected.to have_attributes(apns_id: "apns-id") }
@@ -54,6 +63,7 @@ describe Apnotic::Notification do
       it { is_expected.to have_attributes(topic: "com.example.myapp") }
       it { is_expected.to have_attributes(authorization: "token") }
       it { is_expected.to have_attributes(authorization_header: "bearer token") }
+      it { is_expected.to have_attributes(push_type: "liveactivity") }
     end
   end
 
@@ -108,6 +118,10 @@ describe Apnotic::Notification do
         notification.relevance_score    = 0.8
         notification.custom_payload     = { acme1: "bar" }
         notification.mutable_content    = 1
+        notification.stale_date         = 1650998941
+        notification.content_state      = { content: "content" }
+        notification.timestamp          = 1168364460
+        notification.event              = "update"
       end
 
       it { is_expected.to eq (
@@ -122,7 +136,11 @@ describe Apnotic::Notification do
             'thread-id'          => 'action_id',
             'target-content-id'  => 'target_content_id',
             'interruption-level' => 'passive',
-            'relevance-score'    => 0.8
+            'relevance-score'    => 0.8,
+            'stale-date'         => 1650998941,
+            'content-state'      => { content: "content" },
+            'timestamp'          => 1168364460,
+            'event'              => 'update',
           },
           acme1: "bar"
         }.to_json

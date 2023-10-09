@@ -325,6 +325,7 @@ These are all Accessor attributes.
 | `content_state` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 16+
 | `timestamp` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 16+
 | `event` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 16+
+| `dismissal_date` | Refer to [Payload Key Reference](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/generating_a_remote_notification#2943363) for details. iOS 16+
 | `apns_id` | Refer to [Communicating with APNs](https://developer.apple.com/library/content/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html) for details.
 | `expiration` | "
 | `priority` | "

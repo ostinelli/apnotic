@@ -122,6 +122,7 @@ describe Apnotic::Notification do
         notification.content_state      = { content: "content" }
         notification.timestamp          = 1168364460
         notification.event              = "update"
+        notification.dismissal_date     = 1168364461
       end
 
       it { is_expected.to eq (
@@ -141,6 +142,7 @@ describe Apnotic::Notification do
             'content-state'      => { content: "content" },
             'timestamp'          => 1168364460,
             'event'              => 'update',
+            'dismissal-date'     => 1168364461,
           },
           acme1: "bar"
         }.to_json

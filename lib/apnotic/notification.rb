@@ -5,7 +5,7 @@ module Apnotic
   class Notification < AbstractNotification
     attr_accessor :alert, :badge, :sound, :content_available, :category, :custom_payload, :url_args, :mutable_content, :thread_id
     attr_accessor :target_content_id, :interruption_level, :relevance_score
-    attr_accessor :stale_date, :content_state, :timestamp, :event
+    attr_accessor :stale_date, :content_state, :timestamp, :event, :dismissal_date
 
     def background_notification?
       aps.count == 1 && aps.key?('content-available') && aps['content-available'] == 1
@@ -30,6 +30,7 @@ module Apnotic
         result.merge!('content-state' => content_state) if content_state
         result.merge!('timestamp' => timestamp) if timestamp
         result.merge!('event' => event) if event
+        result.merge!('dismissal-date' => dismissal_date) if dismissal_date
       end
     end
 

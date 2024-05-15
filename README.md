@@ -43,6 +43,8 @@ token = "6c267f26b173cd9595ae2f6702b1ab560371a60e7c8a9e27419bd0fa4a42e58f"
 
 notification       = Apnotic::Notification.new(token)
 notification.alert = "Notification from Apnotic!"
+notification.topic = "com.example.myapp" # your identifier found on https://developer.apple.com/account/resources/identifiers/list
+
 
 # send (this is a blocking call)
 response = connection.push(notification)
@@ -71,6 +73,7 @@ token = "6c267f26b173cd9595ae2f6702b1ab560371a60e7c8a9e27419bd0fa4a42e58f"
 
 notification       = Apnotic::Notification.new(token)
 notification.alert = "Notification from Apnotic!"
+notification.topic = "com.example.myapp" # your identifier found on https://developer.apple.com/account/resources/identifiers/list
 
 # prepare push
 push = connection.prepare_push(notification)

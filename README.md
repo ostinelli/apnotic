@@ -43,6 +43,8 @@ token = "6c267f26b173cd9595ae2f6702b1ab560371a60e7c8a9e27419bd0fa4a42e58f"
 
 notification       = Apnotic::Notification.new(token)
 notification.alert = "Notification from Apnotic!"
+notification.topic = "com.example.myapp" # your identifier found on https://developer.apple.com/account/resources/identifiers/list
+
 
 # send (this is a blocking call)
 response = connection.push(notification)
@@ -71,6 +73,7 @@ token = "6c267f26b173cd9595ae2f6702b1ab560371a60e7c8a9e27419bd0fa4a42e58f"
 
 notification       = Apnotic::Notification.new(token)
 notification.alert = "Notification from Apnotic!"
+notification.topic = "com.example.myapp" # your identifier found on https://developer.apple.com/account/resources/identifiers/list
 
 # prepare push
 push = connection.prepare_push(notification)
@@ -416,6 +419,9 @@ Optionally, you may covert the p12 file to a pem file (this step is optional bec
 ```
 $ openssl pkcs12 -in cert.p12 -out apple_push_notification_production.pem -nodes -clcerts
 ```
+
+If you see the error `PKCS12_parse: unsupported` when attempting to create a connection you can re-encrypt your certificate as described here:  https://help.heroku.com/88GYDTB2/how-do-i-configure-openssl-to-allow-the-use-of-legacy-cryptographic-algorithms
+
 
 
 ## Thread-Safety

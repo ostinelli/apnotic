@@ -1,5 +1,4 @@
 [![Build Status](https://github.com/ostinelli/apnotic/actions/workflows/ci.yml/badge.svg)](https://github.com/ostinelli/apnotic/actions/workflows/ci.yml)
-[![Code Climate](https://codeclimate.com/github/ostinelli/apnotic/badges/gpa.svg)](https://codeclimate.com/github/ostinelli/apnotic)
 [![Gem Version](https://badge.fury.io/rb/apnotic.svg)](https://badge.fury.io/rb/apnotic)
 
 # Apnotic

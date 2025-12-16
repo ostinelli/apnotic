@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.email                 = ["roberto@ostinelli.net"]
   spec.summary               = %q{Apnotic is an Apple Push Notification gem able to provide instant feedback.}
   spec.homepage              = "http://github.com/ostinelli/apnotic"
-  spec.required_ruby_version = '>=2.4.0'
+  spec.required_ruby_version = '>= 3.2.0'
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.bindir        = "exe"
@@ -19,9 +19,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "net-http2", ">= 0.18.3", "< 2"
-  spec.add_dependency "connection_pool", "~> 2"
+  spec.add_dependency "connection_pool", ">= 2", "< 4"
+  spec.add_dependency "base64"
 
   spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake", ">= 12.3.3"
+  spec.add_development_dependency "rake", ">= 13.3.1"
   spec.add_development_dependency "rspec", "~> 3.0"
 end

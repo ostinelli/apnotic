@@ -14,7 +14,7 @@ module Apnotic
     private
 
     def aps
-      {}.tap do |result|
+      @aps ||= {}.tap do |result|
         result.merge!(alert: alert) if alert
         result.merge!(badge: badge) if badge
         result.merge!(sound: sound) if sound

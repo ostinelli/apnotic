@@ -8,6 +8,11 @@ jobs:
     strategy:
       matrix:
         ruby-version: ['3.2', '3.3', '3.4', '4.0']
+        gemfile:
+          - gemfiles/connection_pool_2.gemfile
+          - gemfiles/connection_pool_3.gemfile
+    env:
+      BUNDLE_GEMFILE: "${{ matrix.gemfile }}"
     steps:
     - uses: actions/checkout@v6
     - name: Set up Ruby

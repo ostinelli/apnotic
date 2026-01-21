@@ -9,7 +9,8 @@ describe Apnotic::ConnectionPool do
 
   let(:pool_options) do
     {
-      size: 5
+      # Using 6 since default value is 5 in both 2.x & 3.x
+      size: 6
     }
   end
 
@@ -35,7 +36,7 @@ describe Apnotic::ConnectionPool do
 
       it "returns a connection pool" do
         expect(subject).to be_kind_of(::ConnectionPool)
-        expect(subject.size).to eq(5)
+        expect(subject.size).to eq(6)
       end
 
       it "passes the connection into a block" do

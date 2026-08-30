@@ -7,7 +7,7 @@ module Apnotic
     end
 
     def call
-      if @cached_value && !expired?
+      if defined?(@cached_at) && !expired?
         @cached_value
       else
         new_value

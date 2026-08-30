@@ -13,7 +13,20 @@ Gem::Specification.new do |spec|
   spec.homepage              = "http://github.com/ostinelli/apnotic"
   spec.required_ruby_version = '>= 3.2.0'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.files         = Dir[
+    '.github/**/*',
+    '.gitignore',
+    '.rspec',
+    '.tool-versions',
+    'Gemfile',
+    'LICENSE.md',
+    'README.md',
+    'Rakefile',
+    'apnotic.gemspec',
+    'bin/*',
+    'gemfiles/*.gemfile',
+    'lib/**/*'
+  ].select { |file| File.file?(file) }
   spec.bindir        = "exe"
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]

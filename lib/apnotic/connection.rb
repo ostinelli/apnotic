@@ -12,8 +12,7 @@ module Apnotic
 
     class << self
       def development(options={})
-        options.merge!(url: APPLE_DEVELOPMENT_SERVER_URL)
-        new(options)
+        new(options.merge(url: APPLE_DEVELOPMENT_SERVER_URL))
       end
     end
 
